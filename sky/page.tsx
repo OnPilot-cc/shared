@@ -47,6 +47,7 @@ export function PageHero({
 	aside,
 	load = [],
 	seam,
+	onPass,
 }: {
 	title: React.ReactNode;
 	lead?: React.ReactNode;
@@ -54,6 +55,8 @@ export function PageHero({
 	aside?: React.ReactNode;
 	load?: DayLoad[];
 	seam?: string;
+	/** El pulso cruzó la hora del elemento `i` de `load`. */
+	onPass?: (i: number) => void;
 }) {
 	const [noGl, setNoGl] = useState(false);
 	const split = Boolean(aside);
@@ -61,7 +64,7 @@ export function PageHero({
 	return (
 		<section className="sk-wrap pt-2">
 			<div className="sk-panel sk-hero-sky sk-band">
-				{!noGl && <SkyCanvas load={load} onUnsupported={() => setNoGl(true)} />}
+				{!noGl && <SkyCanvas load={load} onPass={onPass} onUnsupported={() => setNoGl(true)} />}
 				<SkyHours />
 				{seam && (
 					<div className="absolute bottom-4 right-4 z-10 md:bottom-5 md:right-6">

@@ -19,11 +19,11 @@ export const DAY_SPAN: [number, number] = [7, 19];
 /** Un pulso de lectura cada 9 s: nunca más a menudo que uno cada ~8 s. */
 export const PULSE_MS = 9000;
 
-/** Un día de ejemplo, sintético: algo a las 9, mucho a las 11, una reunión a las 15. */
+/** Un día de ejemplo, sintético: algo a las 9, mucho entre las 11 y las 11:30, una reunión a las 15. */
 export const DEMO_DAY: DayLoad[] = [
 	{ hour: 9, weight: 0.7 },
-	{ hour: 10.8, weight: 1 },
-	{ hour: 11.3, weight: 0.9 },
+	{ hour: 11, weight: 1 },
+	{ hour: 11.5, weight: 0.9 },
 	{ hour: 15, weight: 0.8 },
 ];
 
@@ -59,6 +59,19 @@ export function riseProgress(pulse: number, itemX: number): number {
 	if (run <= 0) return 0;
 	if (run >= RISE_RUN - 1e-9) return 1;
 	return run / RISE_RUN;
+}
+
+/**
+ * Qué elementos (por su posición `xs`, 0–1) cruzó el pulso entre el fotograma
+ * anterior y éste. Un barrido que vuelve a empezar no cruza nada hacia atrás.
+ */
+export function passedItems(prev: number, pulse: number, xs: number[]): number[] {
+	if (pulse <= prev) return [];
+	const out: number[] = [];
+	xs.forEach((x, i) => {
+		if (prev < x && x <= pulse) out.push(i);
+	});
+	return out;
 }
 
 /** El fotograma quieto: todo lo que importa ya está fijado en su hora. */

@@ -1727,3 +1727,149 @@
 	background: rgba(239, 238, 251, 0.06);
 	box-shadow: inset 0 0 0 1px rgba(239, 238, 251, 0.18);
 }
+
+/* las filas del día: una cosa con su etiqueta; cuando el pulso pasa por su
+   hora, la fila se enciende un instante (la portada) */
+.sk .sk-day-row {
+	display: block;
+	margin-inline: -10px;
+	padding: 9px 10px;
+	border-radius: 10px;
+	box-shadow: inset 0 -1px 0 var(--sk-hair);
+	transition: background-color 700ms var(--sk-ease-out);
+}
+.sk .sk-day-row:last-child {
+	box-shadow: none;
+}
+.sk .sk-day-row[data-lit="true"] {
+	background: var(--sk-accent-soft);
+	transition-duration: 160ms;
+}
+
+/* lo que parece un botón en una demostración y no lo es: sin cursor ni foco */
+.sk .sk-fake-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 30px;
+	padding: 0 13px;
+	border-radius: 999px;
+	font-weight: 500;
+	color: var(--sk-ink);
+	box-shadow: inset 0 0 0 1px var(--sk-hair-2);
+	user-select: none;
+}
+.sk .sk-fake-btn--primary {
+	background: var(--sk-ink);
+	color: #ffffff;
+	box-shadow: none;
+}
+.sk .sk-fake-switch {
+	position: relative;
+	display: inline-block;
+	width: 30px;
+	height: 18px;
+	border-radius: 999px;
+	background: var(--sk-haze);
+}
+.sk .sk-fake-switch::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 14px;
+	height: 14px;
+	border-radius: 999px;
+	background: #ffffff;
+	box-shadow: 0 1px 2px rgba(30, 24, 80, 0.2);
+}
+.sk .sk-fake-switch[data-on="true"] {
+	background: var(--sk-accent);
+}
+.sk .sk-fake-switch[data-on="true"]::after {
+	left: 14px;
+}
+
+/* la propuesta por dentro: una fila por campo, la etiqueta en Geist Mono */
+.sk .sk-anatomy-row {
+	display: grid;
+	grid-template-columns: 4.5rem minmax(0, 1fr);
+	gap: 4px 16px;
+	align-items: baseline;
+	padding: 14px 20px;
+	box-shadow: inset 0 -1px 0 var(--sk-hair);
+}
+@media (min-width: 40rem) {
+	.sk .sk-anatomy-row {
+		padding: 16px 28px;
+	}
+}
+.sk .sk-anatomy-row:first-child {
+	padding-top: 22px;
+}
+.sk .sk-anatomy-text {
+	padding: 10px 12px;
+	border-radius: 10px;
+	background: var(--sk-mist);
+	font-size: 0.9375rem;
+	line-height: 1.5;
+	color: var(--sk-ink);
+}
+
+/* los permisos: herramienta y acción a la izquierda, su estado a la derecha */
+.sk .sk-perm-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 12px 0;
+	box-shadow: inset 0 1px 0 var(--sk-hair);
+}
+
+/* un aviso sobre la noche: vidrio tenue, porque flota */
+.sk .sk-notice {
+	padding: 12px 14px;
+	border-radius: 14px;
+	background: rgba(239, 238, 251, 0.07);
+	box-shadow: inset 0 0 0 1px rgba(239, 238, 251, 0.12);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+@media (prefers-reduced-transparency: reduce) {
+	.sk .sk-notice {
+		background: var(--sk-night-2);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+}
+
+/* lo que guarda: la cifra en Geist Mono a la izquierda, lo que significa a la derecha */
+.sk .sk-keep-row {
+	display: grid;
+	gap: 8px 32px;
+	padding: 24px 0;
+	box-shadow: inset 0 1px 0 var(--sk-hair-2);
+}
+@media (min-width: 48rem) {
+	.sk .sk-keep-row {
+		grid-template-columns: 14rem minmax(0, 1fr);
+		align-items: baseline;
+	}
+}
+
+/* Una tarjeta blanca que flota sobre el cielo (la del día en el héroe) vuelve a
+   la tinta del día: las reglas de `.sk-hero-sky` no la alcanzan. */
+.sk .sk-hero-sky .sk-day .sk-h3,
+.sk .sk-hero-sky .sk-day .sk-dayline strong {
+	color: var(--sk-ink);
+}
+.sk .sk-hero-sky .sk-day .sk-body,
+.sk .sk-hero-sky .sk-day .sk-dayline {
+	color: var(--sk-ink-2);
+}
+.sk .sk-hero-sky .sk-day .sk-item-label {
+	color: var(--sk-ink-3);
+}
+.sk .sk-hero-sky .sk-day .sk-item-label time {
+	color: var(--sk-accent);
+}

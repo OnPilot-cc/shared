@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BAND, DAY_SPAN, DEMO_DAY, PULSE_MS, bandPoint, hourToX, pulseX, riseProgress, type DayLoad } from "./airglow";
+import { BAND, DAY_SPAN, DEMO_DAY, PULSE_MS, bandPoint, hourToX, passedItems, pulseX, riseProgress, type DayLoad } from "./airglow";
 
 /**
  * El cielo de OnPilot, «Lectura»: un solo shader WebGL2, sin dependencias.
@@ -18,7 +18,9 @@ import { BAND, DAY_SPAN, DEMO_DAY, PULSE_MS, bandPoint, hourToX, pulseX, risePro
  * movimiento reducido, o con `still`, se pinta un solo fotograma con todo lo
  * que importa ya fijado y sin pulso. Si no hay WebGL2 (o se pierde el
  * contexto) avisa con `onUnsupported` y el respaldo de CSS de debajo
- * (`.sk-band`) se queda como está.
+ * (`.sk-band`) se queda como está. `onPass(i)` avisa cuando el pulso cruza la
+ * hora del elemento `i` de `load` (la portada enciende esa fila); con el
+ * fotograma quieto no avisa nunca.
  *
  * El lienzo es decorativo (`aria-hidden`): lo que dice está dicho en el texto.
  */
@@ -150,6 +152,7 @@ export function SkyCanvas({
 	span = DAY_SPAN,
 	still = false,
 	onUnsupported,
+	onPass,
 	className = "",
 }: {
 	/** Lo que la persona tiene en el día; por defecto, el día de ejemplo (sintético). */
@@ -159,14 +162,18 @@ export function SkyCanvas({
 	/** Un solo fotograma quieto, con lo importante fijado (la puerta de acceso). */
 	still?: boolean;
 	onUnsupported?: () => void;
+	/** El pulso cruzó la hora del elemento `i` de `load`. */
+	onPass?: (i: number) => void;
 	className?: string;
 }) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [ready, setReady] = useState(false);
 	const unsupported = useRef(onUnsupported);
+	const passed = useRef(onPass);
 	useEffect(() => {
 		unsupported.current = onUnsupported;
-	}, [onUnsupported]);
+		passed.current = onPass;
+	}, [onUnsupported, onPass]);
 	const loadKey = JSON.stringify(load.slice(0, MAX_LOAD));
 	const [spanFrom, spanTo] = span;
 
@@ -266,10 +273,14 @@ export function SkyCanvas({
 
 		let time = 0;
 		let first = true;
+		let lastPulse = -1;
+		const itemXs = items.map((it) => hourToX(it.hour, range));
 		const draw = () => {
 			lights.fill(0);
 			tones.fill(0);
 			const pulse = frozen ? -1 : pulseX(time * 1000, PULSE_MS);
+			if (!frozen && passed.current) for (const i of passedItems(lastPulse, pulse, itemXs)) passed.current(i);
+			lastPulse = pulse;
 			let slot = 0;
 			// lo que importa: sube desde la Tierra hasta su hora cuando el pulso pasa
 			items.forEach((it, i) => {

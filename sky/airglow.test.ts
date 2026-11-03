@@ -1,6 +1,6 @@
 /** La lógica del cielo «Lectura»: horas a lo ancho de la banda, brillo por carga, el pulso de lectura y la subida de lo que importa. */
 import { describe, expect, it } from "vitest";
-import { DAY_SPAN, DEMO_DAY, PULSE_MS, bandIntensity, bandPoint, frozenRise, hourToX, pulseX, riseProgress } from "./airglow";
+import { DAY_SPAN, DEMO_DAY, PULSE_MS, bandIntensity, bandPoint, frozenRise, hourToX, passedItems, pulseX, riseProgress } from "./airglow";
 
 describe("airglow", () => {
 	it("maps the day span across the band", () => {
@@ -12,7 +12,7 @@ describe("airglow", () => {
 	});
 
 	it("the band is brighter where there is more to do", () => {
-		expect(bandIntensity(hourToX(10.8), DEMO_DAY)).toBeGreaterThan(bandIntensity(hourToX(13.5), DEMO_DAY));
+		expect(bandIntensity(hourToX(11), DEMO_DAY)).toBeGreaterThan(bandIntensity(hourToX(13.5), DEMO_DAY));
 		expect(bandIntensity(hourToX(11), DEMO_DAY)).toBeLessThanOrEqual(1.15);
 	});
 
@@ -41,10 +41,23 @@ describe("airglow", () => {
 	it("the demo day is synthetic and in range", () => {
 		expect(DEMO_DAY).toEqual([
 			{ hour: 9, weight: 0.7 },
-			{ hour: 10.8, weight: 1 },
-			{ hour: 11.3, weight: 0.9 },
+			{ hour: 11, weight: 1 },
+			{ hour: 11.5, weight: 0.9 },
 			{ hour: 15, weight: 0.8 },
 		]);
+	});
+});
+
+describe("passedItems", () => {
+	it("names the items the pulse crossed since the last frame", () => {
+		const xs = [0.2, 0.35, 0.67];
+		expect(passedItems(0.1, 0.25, xs)).toEqual([0]);
+		expect(passedItems(0.25, 0.7, xs)).toEqual([1, 2]);
+		expect(passedItems(0.3, 0.32, xs)).toEqual([]);
+	});
+
+	it("a new sweep starting over crosses nothing backwards", () => {
+		expect(passedItems(1.2, -0.1, [0.2])).toEqual([]);
 	});
 });
 
