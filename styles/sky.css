@@ -1578,10 +1578,6 @@
 	font-feature-settings: "kern" 1, "calt" 0, "tnum" 1;
 	letter-spacing: 0;
 }
-/* la palabra que una página destaca: acento macizo, nunca degradado */
-.sk .sk-ember {
-	color: var(--sk-accent);
-}
 /* el punto de un servicio que funciona (la página de estado) */
 .sk .sk-live-dot {
 	position: relative;
@@ -1857,19 +1853,37 @@
 	}
 }
 
-/* Una tarjeta blanca que flota sobre el cielo (la del día en el héroe) vuelve a
-   la tinta del día: las reglas de `.sk-hero-sky` no la alcanzan. */
-.sk .sk-hero-sky .sk-day .sk-h3,
-.sk .sk-hero-sky .sk-day .sk-dayline strong {
+/* Una tarjeta blanca que flota sobre el cielo (la del día en el héroe, las de
+   un panel de noche) vuelve a la tinta del día: las reglas de lo que se escribe
+   sobre el cielo no la alcanzan. */
+.sk .sk-hero-sky .sk-card .sk-display,
+.sk .sk-skyfill .sk-card .sk-display,
+.sk .sk-night .sk-card .sk-display,
+.sk .sk-hero-sky .sk-card .sk-h2,
+.sk .sk-skyfill .sk-card .sk-h2,
+.sk .sk-night .sk-card .sk-h2,
+.sk .sk-hero-sky .sk-card .sk-h3,
+.sk .sk-skyfill .sk-card .sk-h3,
+.sk .sk-night .sk-card .sk-h3,
+.sk .sk-hero-sky .sk-card .sk-dayline strong,
+.sk .sk-skyfill .sk-card .sk-dayline strong {
 	color: var(--sk-ink);
 }
-.sk .sk-hero-sky .sk-day .sk-body,
-.sk .sk-hero-sky .sk-day .sk-dayline {
+.sk .sk-hero-sky .sk-card .sk-body,
+.sk .sk-skyfill .sk-card .sk-body,
+.sk .sk-night .sk-card .sk-body,
+.sk .sk-hero-sky .sk-card .sk-dayline,
+.sk .sk-skyfill .sk-card .sk-dayline {
 	color: var(--sk-ink-2);
 }
-.sk .sk-hero-sky .sk-day .sk-item-label {
+.sk .sk-hero-sky .sk-card .sk-small,
+.sk .sk-skyfill .sk-card .sk-small,
+.sk .sk-night .sk-card .sk-small,
+.sk .sk-hero-sky .sk-card .sk-item-label,
+.sk .sk-skyfill .sk-card .sk-item-label {
 	color: var(--sk-ink-3);
 }
-.sk .sk-hero-sky .sk-day .sk-item-label time {
+.sk .sk-hero-sky .sk-card .sk-item-label time,
+.sk .sk-skyfill .sk-card .sk-item-label time {
 	color: var(--sk-accent);
 }
