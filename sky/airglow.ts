@@ -19,11 +19,10 @@ export const DAY_SPAN: [number, number] = [7, 19];
 /** Un pulso de lectura cada 9 s: nunca más a menudo que uno cada ~8 s. */
 export const PULSE_MS = 9000;
 
-/** Un día de ejemplo, sintético: algo a las 9, mucho entre las 11 y las 11:30, una reunión a las 15. */
+/** Un día de ejemplo, sintético: una tarea a las 9, un mensaje a las 11, una reunión a las 15. */
 export const DEMO_DAY: DayLoad[] = [
 	{ hour: 9, weight: 0.7 },
 	{ hour: 11, weight: 1 },
-	{ hour: 11.5, weight: 0.9 },
 	{ hour: 15, weight: 0.8 },
 ];
 

@@ -1738,8 +1738,71 @@
 	box-shadow: none;
 }
 .sk .sk-day-row[data-lit="true"] {
-	background: var(--sk-accent-soft);
+	background: var(--sk-mist);
+	box-shadow: inset 0 0 0 1px rgba(91, 63, 217, 0.24);
 	transition-duration: 160ms;
+}
+.sk .sk-hero-sky .sk-day .sk-day-row[data-lit="true"] .sk-item-label time,
+.sk .sk-day-row[data-lit="true"] .sk-item-label time {
+	color: var(--sk-accent-deep);
+	font-weight: 500;
+}
+
+/* el separador decimal de una cifra grande en Geist Mono, sin su celda de aire */
+.sk .sk-decimal {
+	margin-inline: -0.24em;
+}
+
+/* La tira del día: lo que hace OnPilot, cada cosa a su hora sobre un filete
+   con las horas en Geist Mono (la banda del cielo, bajada al suelo claro). */
+.sk .sk-daystrip {
+	position: relative;
+}
+.sk .sk-daystrip-rule {
+	display: none;
+}
+.sk .sk-daystrip-steps {
+	display: grid;
+	gap: 28px;
+}
+.sk .sk-daystrip-steps time {
+	font-size: 0.8125rem;
+	color: var(--sk-accent-deep);
+}
+@media (min-width: 48rem) {
+	.sk .sk-daystrip {
+		padding-top: 64px;
+	}
+	.sk .sk-daystrip-rule {
+		display: block;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 30px;
+		height: 1px;
+		background: var(--sk-hair-2);
+	}
+	.sk .sk-daystrip-steps {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 32px;
+	}
+}
+.sk .sk-daystrip-tick {
+	position: absolute;
+	top: -24px;
+	transform: translateX(-50%);
+	font-size: 0.6875rem;
+	color: var(--sk-ink-3);
+}
+.sk .sk-daystrip-mark {
+	position: absolute;
+	top: -4px;
+	width: 9px;
+	height: 9px;
+	border-radius: 999px;
+	background: var(--sk-accent);
+	box-shadow: 0 0 0 4px var(--sk-accent-soft);
+	transform: translateX(-50%);
 }
 
 /* lo que parece un botón en una demostración y no lo es: sin cursor ni foco */

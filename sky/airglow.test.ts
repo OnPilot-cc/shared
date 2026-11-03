@@ -42,7 +42,6 @@ describe("airglow", () => {
 		expect(DEMO_DAY).toEqual([
 			{ hour: 9, weight: 0.7 },
 			{ hour: 11, weight: 1 },
-			{ hour: 11.5, weight: 0.9 },
 			{ hour: 15, weight: 0.8 },
 		]);
 	});

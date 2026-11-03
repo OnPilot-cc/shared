@@ -71,9 +71,9 @@ export function PageHero({
 						<ExampleSeam label={seam} />
 					</div>
 				)}
-				<div className={`relative grid items-start gap-y-6 px-6 pb-40 pt-12 sm:px-10 md:pb-48 md:pt-16 lg:px-14 ${split ? "lg:grid-cols-12 lg:gap-x-10" : ""}`}>
+				<div className={`relative grid items-start gap-y-6 px-6 pb-72 pt-12 sm:px-10 md:pb-48 md:pt-16 lg:px-14 lg:pb-40 ${split ? "lg:grid-cols-12 lg:gap-x-10" : ""}`}>
 					<div className={split ? "lg:col-span-7" : "max-w-3xl"}>
-						<h1 className={`sk-display sk-rise text-[2.5rem] sm:text-[3.25rem] ${split ? "lg:text-[3.25rem]" : "lg:text-[3.75rem]"}`}>{title}</h1>
+						<h1 className="sk-display sk-rise text-[2.5rem] sm:text-[3.25rem] lg:text-[3.75rem]">{title}</h1>
 						{lead && (
 							<p className="sk-body sk-rise mt-6 max-w-2xl text-[1.0625rem] md:text-lg" style={{ "--i": 1 } as React.CSSProperties}>
 								{lead}
