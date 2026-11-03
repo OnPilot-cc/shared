@@ -2,7 +2,7 @@
  * El mundo visual de OnPilot: «Airglow».
  *
  * La gramática del cielo de la casa, a otra altura. Los otros mundos son la
- * mañana fría (OnDesk), la noche (OnForge), el atardecer (OnReach) y la noche
+ * mañana fría (OnDesk), la noche, el atardecer (OnReach) y la noche
  * polar desde la nieve (Northstar); OnPilot es el cielo visto desde arriba: la
  * ionosfera, el resplandor tenue sobre el borde de la Tierra de noche que nunca
  * se apaga del todo. OnPilot vive ahí arriba, recoge las señales de las
@@ -1902,7 +1902,7 @@
 	}
 }
 
-/* lo que guarda: la cifra en Geist Mono a la izquierda, lo que significa a la derecha */
+/* lo que guarda: la cifra en Geist 500 a la izquierda, lo que significa a la derecha */
 .sk .sk-keep-row {
 	display: grid;
 	gap: 8px 32px;
