@@ -49,7 +49,7 @@ cada consumidor trae su propia copia de lucide-react.
 <!-- BEGIN generated:modules -->
 <!-- No edites aquí: lo reescribe `npm run docs`. -->
 
-Módulos de las carpetas publicadas (48), con la primera línea de su comentario de cabecera.
+Módulos de las carpetas publicadas (52), con la primera línea de su comentario de cabecera.
 
 | Archivo | Qué hace |
 | --- | --- |
@@ -65,9 +65,13 @@ Módulos de las carpetas publicadas (48), con la primera línea de su comentario
 | [`lib/vite-env.d.ts`](../lib/vite-env.d.ts) | Las variables de build que lee el paquete (`import.meta.env`). |
 | [`sky/console-frame.tsx`](../sky/console-frame.tsx) | El marco de consola de admin, partners y developers, en el mundo «Clear Sky» de noche: la forma de una app de trabajo, la misma que la consola de onpilot. |
 | [`sky/console.tsx`](../sky/console.tsx) | Las piezas de la consola, en el mundo «Clear Sky» de noche (2026-10-05). |
+| [`sky/day.test.tsx`](../sky/day.test.tsx) | El documento de día: mientras se ve una página de Airglow, `<html>` y la barra del navegador llevan el suelo claro, y al salir vuelven a lo que había. |
+| [`sky/day.ts`](../sky/day.ts) | El documento entero lleva el suelo claro de Airglow mientras se ve una página del mundo: el fondo de `<html>` (lo que asoma en el rebote del scroll) y el color de la… |
 | [`sky/hooks.ts`](../sky/hooks.ts) | Hooks de scroll y de montaje contra los que se animan las páginas de Clear Sky, y los tres que usan las piezas de consola de `console.tsx` (`useFlash`, `useDismiss`,… |
-| [`sky/kit.tsx`](../sky/kit.tsx) | Las piezas del mundo de OnPilot («Clear Sky» de noche): la marca, la píldora y la flecha. |
-| [`sky/night.ts`](../sky/night.ts) | El documento entero es de noche mientras se ve una página de Clear Sky: el fondo de `<html>` (lo que asoma en el rebote del scroll) y el color de la barra del navegador. |
+| [`sky/kit.tsx`](../sky/kit.tsx) | Las piezas del mundo de OnPilot («Airglow»): la marca, la píldora y la flecha. |
+| [`sky/mark.test.ts`](../sky/mark.test.ts) | La marca Órbita con hueco: el aro se abre donde está el punto, y nada de la órbita inclinada heredada. |
+| [`sky/mark.ts`](../sky/mark.ts) | La marca de OnPilot, «Órbita con hueco», como datos: un núcleo de tinta, un aro violeta que se abre donde está el punto, y el punto que abre su propio camino. |
+| [`sky/night.ts`](../sky/night.ts) | Puente mientras los consumidores pasan a `day.ts`: el documento ya no es de noche. |
 | [`sky/page.tsx`](../sky/page.tsx) | Las piezas de página del mundo de OnPilot («Clear Sky» de noche), compartidas por el sitio de onpilot y las páginas públicas de partners y developers: la cabecera de… |
 | [`sky/platform-client.test.ts`](../sky/platform-client.test.ts) | El cliente de plataforma: la URL de entrada, las credenciales en cada llamada, la frase del servidor y un solo refresh. |
 | [`sky/platform-origin-local.test.ts`](../sky/platform-origin-local.test.ts) | En local, una consola habla con el `wrangler pages dev` de onpilot (puerto 8800). |
