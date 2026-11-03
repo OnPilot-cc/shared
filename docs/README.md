@@ -12,20 +12,25 @@ lo consume.
 
 El pin es a un **tag** de git, no a master (`v1.0.0`; consumidores: `onpilot` y
 `admin`, por `file:../shared` hasta que exista el remoto `OnPilot-cc/shared`).
-El mundo visual es **provisional** (el «Clear Sky» de noche heredado) hasta el
-subproyecto 2, que define el mundo de OnPilot; los comentarios que nombran
-partners y developers describen piezas heredadas que hoy nadie consume. Ver
-`decisiones.md` y lo que falta en `pendiente.md`. Las dependencias de runtime
-son `peerDependencies`; cada consumidor las deduplica (`dedupe` en su
+El mundo visual es **«Airglow»** (subproyecto 2, 2026-11-03; spec
+`../docs/superpowers/specs/2026-11-03-onpilot-mundo-airglow-design.md`), que
+sustituye al «Clear Sky» de noche heredado del fork. Ver `decisiones.md` y lo
+que falta en `pendiente.md`. Las dependencias de runtime son
+`peerDependencies`; cada consumidor las deduplica (`dedupe` en su
 `vite.config.ts`) para que no haya dos React.
 
-## Sky: el mundo «Clear Sky» de noche (2026-10-05)
+## Airglow: el mundo de OnPilot
 
-Desde el subproyecto 4 el mundo visual de OnPilot vive aquí y no en cada repo:
+El cielo de la casa visto desde arriba: la página clara (`#f5f5fa`), la noche
+sólo en los paneles de cielo, un solo acento violeta (`#5b3fd9`), la banda de
+la ionosfera (`#a99bff`) sólo dentro del cielo, Geist para todo y Geist Mono
+sólo en lo que mide el agente (`.sk-mono`). `styles/sky.css` se re-basó sobre
+el de Northstar («Polar Night»), que ya era «página clara + noche en paneles»
+con el mismo vocabulario de clases. Las piezas:
 
 | Qué | Dónde | Quién lo consume |
 |---|---|---|
-| El mundo: tokens, tipografía, píldoras, tarjetas, vidrio, héroe, terminal, páginas interiores y el **bloque de consola** (el vocabulario del mapa reinterpretado en la noche, la barra lateral, el Logbook) | `styles/sky.css` (sobre `styles/site.css`) | los cuatro repos, desde su `index.css` |
+| El mundo: tokens, tipografía, píldoras, tarjetas, vidrio, héroe y paneles de cielo, páginas interiores, el **bloque de consola** (el vocabulario del mapa reinterpretado en Airglow) y la barra lateral | `styles/sky.css` (sobre `styles/site.css`) | los cuatro repos, desde su `index.css` |
 | El kit del sitio: marca, píldora, flecha; cabecera de página con el cielo, sección, aro, recorrido en pasos, preguntas, control segmentado, cierre | `sky/kit.tsx`, `sky/page.tsx`, `sky/sky-canvas.tsx`, `sky/night.ts`, `sky/hooks.ts` | onpilot (envuelto en `features/frontend/sky/page.tsx`), partners, developers |
 | El documento de referencia: dos rieles, filtro, índice móvil y los bloques comunes | `sky/reference.tsx` | partners (`/programme`), developers (`/docs`) |
 | El marco de consola: barra lateral con destinos, barra superior con el rastro y la cuenta, salida por `#signout` | `sky/console-frame.tsx` | admin, partners (`/dashboard`) |
@@ -33,10 +38,10 @@ Desde el subproyecto 4 el mundo visual de OnPilot vive aquí y no en cada repo:
 | El cliente de plataforma: `platformOrigin()` (`VITE_PLATFORM_ORIGIN`; localhost → `:8800`), `api()` con credenciales, `fetchMe()`, `signInUrl()`, `signOutAndGo()` | `lib/platform-client.ts` | admin, partners, developers |
 
 Reglas que las piezas ya cumplen y que un consumidor no debe deshacer (están
-en la cabecera de `sky.css` y en el `DESIGN.md` de cada consola): sólo noche;
-el ámbar como único acento; el verde sólo para `live`; Geist, y Geist Mono sólo
-para lo que se teclea; elevación por luz, nunca borde y sombra a la vez; vidrio
-sólo donde algo flota. Los iconos se tipan por su forma (`IconComponent`) porque
+en la cabecera de `sky.css` y en el `DESIGN.md` de `onpilot`): sólo claro, con
+la noche dentro de los paneles de cielo; el violeta como único acento; la banda
+sólo dentro del cielo; Geist, y Geist Mono sólo en lo que mide el agente;
+sombra o línea, nunca las dos; vidrio sólo donde algo flota. Los iconos se tipan por su forma (`IconComponent`) porque
 cada consumidor trae su propia copia de lucide-react.
 
 ## Módulos

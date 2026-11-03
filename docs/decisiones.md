@@ -15,12 +15,15 @@
 - `platformOrigin()` en localhost apunta a `http://localhost:8800` (puerto de
   `wrangler pages dev` de onpilot; los puertos de la familia no se pisan).
 
-## Lo provisional
+## El mundo «Airglow» (2026-11-03)
 
-El mundo visual («Clear Sky» de noche, con su ámbar) es el de OnForge. El
-subproyecto 2 de OnPilot define el mundo propio (UI como las otras cuatro
-plataformas, sensación tecnológica/IA) y lo sustituye aquí. Hasta entonces las
-piezas de `sky/reference.tsx` y los comentarios que hablan de partners y
-developers son herencia sin consumidor.
+El subproyecto 2 sustituye el «Clear Sky» de noche heredado (su ámbar, su
+núcleo con órbita inclinada) por «Airglow»: página clara, noche en paneles,
+un acento violeta, Geist con Geist Mono acotada. `styles/sky.css` se re-basó
+sobre el de Northstar («Polar Night»), que ya tenía la forma «página clara +
+noche en paneles» y el mismo vocabulario de clases que el de OnForge; se
+tradujeron sus colores y se añadieron las piezas propias de OnPilot (`sk-mono`,
+la barra lateral). Spec:
+`OnPilot.cc/docs/superpowers/specs/2026-11-03-onpilot-mundo-airglow-design.md`.
 
 Spec: `OnPilot.cc/docs/superpowers/specs/2026-11-02-onpilot-plataforma-design.md`.
