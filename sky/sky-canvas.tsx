@@ -55,6 +55,8 @@ const vec3 LIMB = vec3(0.427, 0.388, 0.788);
 const vec3 TOOL = vec3(1.0, 0.906, 0.761);
 const vec3 HELD = vec3(0.937, 0.933, 0.984);
 
+float sq(float x) { return x * x; }
+
 float hash(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
 	p += dot(p, p + 45.32);
@@ -69,7 +71,7 @@ float stars(vec2 p, float cells) {
 	vec2 o = vec2(hash(id + 3.1), hash(id + 7.7)) - 0.5;
 	float d = length(f - o * 0.6);
 	float tw = 0.6 + 0.4 * sin(uTime * (0.4 + h * 1.6) + h * 40.0);
-	return smoothstep(0.08, 0.0, d) * tw * (h - 0.93) / 0.07;
+	return (1.0 - smoothstep(0.0, 0.08, d)) * tw * (h - 0.93) / 0.07;
 }
 
 void main() {
@@ -84,7 +86,7 @@ void main() {
 	float s = uScale;
 
 	vec3 col = mix(NIGHT, NIGHT2, smoothstep(0.0, apex, p.y));
-	col += vec3(stars(p, 90.0)) * 0.55 * smoothstep(apex, apex * 0.55, p.y);
+	col += vec3(stars(p, 90.0)) * 0.55 * (1.0 - smoothstep(apex * 0.55, apex, p.y));
 
 	// el brillo de la banda en esta columna: suelo tranquilo + campanas de carga
 	float hx = (p.x / w - uBand.z) / (1.0 - 2.0 * uBand.z);
@@ -104,17 +106,17 @@ void main() {
 
 	// la banda: un trazo fino con su resplandor, por encima del limbo
 	float db = d - R;
-	float core = exp(-pow(db / (1.8 * s), 2.0));
-	float halo = exp(-pow(db / (15.0 * s), 2.0));
+	float core = exp(-sq(db / (1.8 * s)));
+	float halo = exp(-sq(db / (15.0 * s)));
 	col += BANDC * halo * 0.42 * k + mix(BANDC, GLOW, 0.6) * core * 0.85 * k;
 
 	// la Tierra de noche y su limbo
 	if (d < Rp) {
 		float t = clamp((p.y - apex) / (uRes.y - apex + 1.0), 0.0, 1.0);
 		vec3 planet = mix(vec3(0.114, 0.102, 0.282), vec3(0.02, 0.02, 0.051), smoothstep(0.0, 0.9, t + abs(p.x - w * 0.5) / w));
-		col = mix(col, planet, smoothstep(Rp, Rp - 1.5 * s, d));
+		col = mix(col, planet, 1.0 - smoothstep(Rp - 1.5 * s, Rp, d));
 	}
-	col += LIMB * exp(-pow((d - Rp) / (0.9 * s), 2.0)) * 0.55;
+	col += LIMB * exp(-sq((d - Rp) / (0.9 * s))) * 0.55;
 
 	// las luces de las herramientas: ámbar tenue abajo; fijadas en su hora, claras y con anillo
 	for (int i = 0; i < ${MAX_LIGHTS}; i++) {
@@ -122,8 +124,8 @@ void main() {
 		if (L.w <= 0.0) continue;
 		float dl = length(p - L.xy);
 		vec3 tone = mix(TOOL, HELD, uLightTone[i].x);
-		col += tone * exp(-pow(dl / L.z, 2.0)) * L.w;
-		col += HELD * exp(-pow((dl - 9.0 * s) / (0.8 * s), 2.0)) * 0.35 * uLightTone[i].y;
+		col += tone * exp(-sq(dl / L.z)) * L.w;
+		col += HELD * exp(-sq((dl - 9.0 * s) / (0.8 * s))) * 0.35 * uLightTone[i].y;
 	}
 
 	outColor = vec4(col, 1.0);
@@ -142,7 +144,7 @@ function compile(gl: WebGL2RenderingContext, type: number, source: string): WebG
 	return shader;
 }
 
-const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
 /** Luces de fondo que no suben: el resto de herramientas, quietas en la Tierra. */
 const IDLE = [0.18, 0.31, 0.43, 0.58, 0.71, 0.84];

@@ -374,6 +374,7 @@
 	border-radius: 999px;
 	font-size: 0.875rem;
 	font-weight: 450;
+	white-space: nowrap;
 	color: var(--sk-ink-2);
 	text-decoration: none;
 	transition:
@@ -1636,8 +1637,9 @@
    vista desde arriba (un círculo enorme cuyo borde cae al 84,5 % de la altura
    y cuyo radio es 1,352 veces el ancho, la misma curva que `bandPoint`) con su
    limbo y el resplandor de la banda encima. Quieto: sin lienzo no hay pulso. */
+/* Sin `position`: sky.css no va en una capa de Tailwind y la ganaría a la
+   utilidad de quien lo monta (`relative`, o `lg:sticky` en la puerta). */
 .sk .sk-band {
-	position: relative;
 	overflow: hidden;
 	isolation: isolate;
 }

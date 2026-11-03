@@ -63,7 +63,7 @@ export function PageHero({
 
 	return (
 		<section className="sk-wrap pt-2">
-			<div className="sk-panel sk-hero-sky sk-band">
+			<div className="sk-panel sk-hero-sky sk-band relative">
 				{!noGl && <SkyCanvas load={load} onPass={onPass} onUnsupported={() => setNoGl(true)} />}
 				<SkyHours />
 				{seam && (
@@ -233,7 +233,7 @@ export function Closing({
 
 	return (
 		<section className="sk-wrap pb-6 pt-20 md:pt-28">
-			<div className="sk-panel sk-hero-sky sk-band">
+			<div className="sk-panel sk-hero-sky sk-band relative">
 				{!noGl && <SkyCanvas load={[]} onUnsupported={() => setNoGl(true)} />}
 				<SkyHours />
 				<div className="relative max-w-2xl px-6 pb-40 pt-14 sm:px-12 md:pb-48 md:pt-20 lg:px-16">
