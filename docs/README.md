@@ -49,7 +49,7 @@ cada consumidor trae su propia copia de lucide-react.
 <!-- BEGIN generated:modules -->
 <!-- No edites aquí: lo reescribe `npm run docs`. -->
 
-Módulos de las carpetas publicadas (52), con la primera línea de su comentario de cabecera.
+Módulos de las carpetas publicadas (54), con la primera línea de su comentario de cabecera.
 
 | Archivo | Qué hace |
 | --- | --- |
@@ -63,6 +63,8 @@ Módulos de las carpetas publicadas (52), con la primera línea de su comentario
 | [`lib/use-copy.ts`](../lib/use-copy.ts) | Copiar, hecho una sola vez para todo el proyecto: la misma implementación que partners y developers, la que usa `CopyTicket` en `console.tsx`. |
 | [`lib/utils.ts`](../lib/utils.ts) | `cn` — juntar clases de Tailwind sin que se peleen entre ellas. |
 | [`lib/vite-env.d.ts`](../lib/vite-env.d.ts) | Las variables de build que lee el paquete (`import.meta.env`). |
+| [`sky/airglow.test.ts`](../sky/airglow.test.ts) | La lógica del cielo «Lectura»: horas a lo ancho de la banda, brillo por carga, el pulso de lectura y la subida de lo que importa. |
+| [`sky/airglow.ts`](../sky/airglow.ts) | La lógica del cielo «Lectura», sin DOM: dónde cae cada hora en la banda, cuánto brilla la banda según lo que la persona tiene a esa hora, por dónde va el pulso de… |
 | [`sky/console-frame.tsx`](../sky/console-frame.tsx) | El marco de consola de admin, partners y developers, en el mundo «Clear Sky» de noche: la forma de una app de trabajo, la misma que la consola de onpilot. |
 | [`sky/console.tsx`](../sky/console.tsx) | Las piezas de la consola, en el mundo «Clear Sky» de noche (2026-10-05). |
 | [`sky/day.test.tsx`](../sky/day.test.tsx) | El documento de día: mientras se ve una página de Airglow, `<html>` y la barra del navegador llevan el suelo claro, y al salir vuelven a lo que había. |
