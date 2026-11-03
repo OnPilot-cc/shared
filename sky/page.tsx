@@ -17,7 +17,6 @@
  */
 import { useRef, useState, type ComponentType } from "react";
 import { ChevronDown } from "lucide-react";
-import { useNarrow } from "./hooks";
 import { SkyCanvas } from "./sky-canvas";
 import { SkArrow, SkButton } from "./kit";
 
@@ -50,7 +49,6 @@ export function PageHero({
 	aside?: React.ReactNode;
 }) {
 	const anchor = useRef<HTMLDivElement>(null);
-	const narrow = useNarrow();
 	const [noGl, setNoGl] = useState(false);
 	const split = Boolean(core || aside);
 
@@ -58,13 +56,7 @@ export function PageHero({
 		<section className="sk-page-hero">
 			<div className="sk-hero-sky absolute inset-0" aria-hidden="true" />
 			{!noGl && (
-				<SkyCanvas
-					planet={core ? anchor : undefined}
-					horizon={narrow ? 0.88 : split ? 0.8 : 0.72}
-					fade={[0, 1]}
-					quality={core ? 1 : 0.6}
-					onUnsupported={() => setNoGl(true)}
-				/>
+				<SkyCanvas onUnsupported={() => setNoGl(true)} />
 			)}
 			<div className={`sk-wrap relative grid items-center gap-y-6 pb-20 pt-14 md:pb-28 md:pt-20 ${split ? "lg:grid-cols-12 lg:gap-x-10" : ""}`}>
 				<div className={split ? "lg:col-span-7" : "max-w-3xl"}>
@@ -83,7 +75,6 @@ export function PageHero({
 				{core && (
 					<div className="lg:col-span-5">
 						<div ref={anchor} className="relative mx-auto -my-4 aspect-square w-full max-w-72 lg:my-0 lg:max-w-none">
-							{noGl && <div className="sk-orb absolute left-1/2 top-1/2 size-[58%] -translate-x-1/2 -translate-y-1/2" />}
 						</div>
 					</div>
 				)}
@@ -235,7 +226,7 @@ export function Closing({
 		<section className="sk-wrap pb-6 pt-20 md:pt-28">
 			<div className="sk-panel relative">
 				<div className="sk-hero-sky absolute inset-0" aria-hidden="true" />
-				{!noGl && <SkyCanvas horizon={0.62} quality={0.7} onUnsupported={() => setNoGl(true)} />}
+				{!noGl && <SkyCanvas onUnsupported={() => setNoGl(true)} />}
 				<div className="relative max-w-2xl px-6 py-16 sm:px-12 md:py-24 lg:px-16">
 					<h2 className="sk-h2 text-[2.25rem] md:text-[3.25rem]">{headline}</h2>
 					{desc && <p className="sk-body mt-5 max-w-lg text-[1.0625rem]">{desc}</p>}

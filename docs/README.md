@@ -49,7 +49,7 @@ cada consumidor trae su propia copia de lucide-react.
 <!-- BEGIN generated:modules -->
 <!-- No edites aquí: lo reescribe `npm run docs`. -->
 
-Módulos de las carpetas publicadas (54), con la primera línea de su comentario de cabecera.
+Módulos de las carpetas publicadas (56), con la primera línea de su comentario de cabecera.
 
 | Archivo | Qué hace |
 | --- | --- |
@@ -79,7 +79,9 @@ Módulos de las carpetas publicadas (54), con la primera línea de su comentario
 | [`sky/platform-origin-local.test.ts`](../sky/platform-origin-local.test.ts) | En local, una consola habla con el `wrangler pages dev` de onpilot (puerto 8800). |
 | [`sky/platform-origin.test.ts`](../sky/platform-origin.test.ts) | Sin `VITE_PLATFORM_ORIGIN`, una consola en un subdominio habla con el apex de producción. |
 | [`sky/reference.tsx`](../sky/reference.tsx) | Un documento de referencia en el mundo «Clear Sky» de noche: las condiciones del programa de partners (`/programme`) y la documentación de developers (`/docs`). |
-| [`sky/sky-canvas.tsx`](../sky/sky-canvas.tsx) | El cielo de OnPilot: un solo shader WebGL2, sin dependencias. |
+| [`sky/sky-canvas.test.tsx`](../sky/sky-canvas.test.tsx) | El cielo «Lectura»: sin WebGL2 avisa y deja el respaldo de CSS, el lienzo es decorativo y las horas van en Geist Mono. |
+| [`sky/sky-canvas.tsx`](../sky/sky-canvas.tsx) | El cielo de OnPilot, «Lectura»: un solo shader WebGL2, sin dependencias. |
+| [`sky/sky-hours.tsx`](../sky/sky-hours.tsx) | Las horas de la banda, en DOM y en Geist Mono (lo que mide el agente): el shader no escribe texto. |
 | [`ui/alert-dialog.tsx`](../ui/alert-dialog.tsx) | El diálogo de consecuencias: el mismo papel que `Dialog`, pero no se cierra al pulsar fuera y el foco empieza en «Cancel», el lado que no hace nada. |
 | [`ui/avatar.tsx`](../ui/avatar.tsx) | La cara de alguien es su monograma: su foto, o sus iniciales en el corte condensado, dentro de un cuadrado con el trazo del mundo. |
 | [`ui/badge.tsx`](../ui/badge.tsx) | El sello: un estado impreso en una caja con el trazo del mundo. |

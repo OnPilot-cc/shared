@@ -1614,3 +1614,43 @@
 .sk .sk-sidelink.is-active svg {
 	color: var(--sk-accent);
 }
+
+/* ── el cielo «Lectura»: su respaldo y sus horas ────────────────────────────
+   `.sk-band` va en el panel de cielo, debajo del lienzo: es lo que se ve antes
+   del primer fotograma y lo único que queda sin WebGL2. La Tierra de noche
+   vista desde arriba (un círculo enorme cuyo borde cae al 84,5 % de la altura
+   y cuyo radio es 1,352 veces el ancho, la misma curva que `bandPoint`) con su
+   limbo y el resplandor de la banda encima. Quieto: sin lienzo no hay pulso. */
+.sk .sk-band {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+}
+.sk .sk-band::before {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	left: 50%;
+	top: 84.5%;
+	width: 270.4%;
+	aspect-ratio: 1;
+	transform: translateX(-50%);
+	border-radius: 50%;
+	background: radial-gradient(closest-side at 50% 0%, #1d1a48, #05050d 60%);
+	box-shadow:
+		0 0 0 1px rgba(109, 99, 201, 0.55),
+		0 -3px 0 -1px rgba(207, 198, 255, 0.55),
+		0 -8px 14px rgba(169, 155, 255, 0.35),
+		0 -26px 60px rgba(169, 155, 255, 0.16);
+	pointer-events: none;
+}
+.sk .sk-band > .sk-canvas {
+	z-index: 0;
+}
+/* las horas de la banda: Geist Mono pequeña, tinta de la noche atenuada */
+.sk .sk-hour {
+	font-size: 0.75rem;
+	line-height: 1;
+	color: var(--sk-night-ink-2);
+	opacity: 0.8;
+}

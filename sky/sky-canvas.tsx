@@ -1,25 +1,24 @@
-import { useEffect, useRef, useState, type MutableRefObject, type RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
+import { BAND, DAY_SPAN, DEMO_DAY, PULSE_MS, bandPoint, hourToX, pulseX, riseProgress, type DayLoad } from "./airglow";
 
 /**
- * El cielo de OnPilot: un solo shader WebGL2, sin dependencias.
+ * El cielo de OnPilot, «Lectura»: un solo shader WebGL2, sin dependencias.
  *
- * De noche: un degradado azul casi negro con estrellas que titilan, un mar de
- * nubes que se acerca despacio y, si se le da un ancla, el núcleo: una bola de
- * vidrio macizo con fuego dentro (lo que hay detrás se ve invertido, como en
- * una lente), una órbita fina inclinada y los despliegues como satélites. Un
- * despliegue sale del núcleo con una estela ámbar, entra en órbita y, cuando
- * está en vivo, se vuelve verde: el único verde del mundo es el de `live`. Los
- * anteriores siguen en órbita, atenuados, porque OnPilot guarda cada uno.
+ * La Tierra de noche vista desde arriba, abajo, con un filete fino en el limbo;
+ * encima, la banda de la ionosfera, que brilla más en las horas en que la
+ * persona tiene más cosas (`load`). Cada pocos segundos un pulso de lectura la
+ * recorre de izquierda a derecha (OnPilot leyendo) y, al pasar, las luces de
+ * las herramientas que importan suben desde la Tierra y se quedan fijas en su
+ * hora con un anillo fino. Entre pulsos, ondas suaves recorren la banda. Las
+ * horas no las pinta el shader: van en DOM, en Geist Mono (`sky-hours.tsx`),
+ * sobre la misma curva (`bandPoint` de `airglow.ts`).
  *
- * Quien monta el lienzo lo dirige con `control` (`deploy()` al lanzar,
- * `live()` al quedar en vivo): la portada lo sincroniza con su terminal. Sin
- * `control`, el núcleo despliega solo, cada poco.
- *
- * Coste acotado: el bucle sólo corre mientras el lienzo está en pantalla y la
- * pestaña visible; la resolución se limita a 1,5× y baja en pantallas
- * estrechas. Con movimiento reducido se pinta un solo fotograma. Si no hay
- * WebGL2 (o se pierde el contexto) avisa con `onUnsupported` y el CSS de debajo
- * (`.sk-hero-sky`, `.sk-orb`) se queda como está.
+ * Coste acotado: el bucle sólo corre con el lienzo en pantalla y la pestaña
+ * visible; la resolución se limita a 1,5× y baja en pantallas estrechas. Con
+ * movimiento reducido, o con `still`, se pinta un solo fotograma con todo lo
+ * que importa ya fijado y sin pulso. Si no hay WebGL2 (o se pierde el
+ * contexto) avisa con `onUnsupported` y el respaldo de CSS de debajo
+ * (`.sk-band`) se queda como está.
  *
  * El lienzo es decorativo (`aria-hidden`): lo que dice está dicho en el texto.
  */
@@ -28,233 +27,105 @@ const VERT = `#version 300 es
 in vec2 aPos;
 void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`;
 
+const MAX_LOAD = 8;
+const MAX_LIGHTS = 16;
+
 const FRAG = `#version 300 es
 precision highp float;
 
 uniform vec2 uRes;
 uniform float uTime;
-uniform vec3 uPlanet;
-uniform float uTilt;
-uniform float uHorizon;
-uniform vec2 uFade;
-uniform float uFlare;
-uniform vec4 uSat[16];
-uniform vec4 uSatCol[16];
+uniform float uPulse;
+uniform float uScale;
+uniform vec4 uBand;
+uniform vec2 uLoad[${MAX_LOAD}];
+uniform int uLoadN;
+uniform vec4 uLight[${MAX_LIGHTS}];
+uniform vec2 uLightTone[${MAX_LIGHTS}];
 
 out vec4 outColor;
 
-const float SQUASH = 0.29;
-const float ORBIT = 1.55;
-const vec3 LIGHT = vec3(-0.5, -0.6, 0.62);
+const vec3 NIGHT = vec3(0.027, 0.031, 0.102);
+const vec3 NIGHT2 = vec3(0.078, 0.078, 0.196);
+const vec3 BANDC = vec3(0.663, 0.608, 1.0);
+const vec3 GLOW = vec3(0.812, 0.776, 1.0);
+const vec3 LIMB = vec3(0.427, 0.388, 0.788);
+const vec3 TOOL = vec3(1.0, 0.906, 0.761);
+const vec3 HELD = vec3(0.937, 0.933, 0.984);
 
 float hash(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
 	p += dot(p, p + 45.32);
 	return fract(p.x * p.y);
 }
-float noise(vec2 p) {
-	vec2 i = floor(p), f = fract(p);
-	vec2 u = f * f * (3.0 - 2.0 * f);
-	return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
-}
-float fbm(vec2 p) {
-	float v = 0.0, a = 0.5;
-	mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
-	for (int i = 0; i < 5; i++) { v += a * noise(p); p = m * p; a *= 0.5; }
-	return v;
-}
-vec2 rot(vec2 v, float a) { float s = sin(a), c = cos(a); return vec2(c * v.x - s * v.y, s * v.x + c * v.y); }
-
-// Una capa de estrellas: una por celda, pocas encendidas, cada una con su ritmo.
-float starLayer(vec2 uv, float cells, float density, float size) {
-	vec2 g = uv * cells;
+float stars(vec2 p, float cells) {
+	vec2 g = p / uRes.x * cells;
 	vec2 id = floor(g);
 	vec2 f = fract(g) - 0.5;
 	float h = hash(id);
-	if (h < density) return 0.0;
+	if (h < 0.93) return 0.0;
 	vec2 o = vec2(hash(id + 3.1), hash(id + 7.7)) - 0.5;
 	float d = length(f - o * 0.6);
-	float tw = 0.55 + 0.45 * sin(uTime * (0.6 + h * 2.4) + h * 40.0);
-	return smoothstep(size, 0.0, d) * tw * (h - density) / (1.0 - density);
-}
-
-vec3 sky(vec2 p) {
-	vec2 uv = p / uRes;
-	float asp = uRes.x / uRes.y;
-	float h = uHorizon;
-	vec3 top = vec3(0.018, 0.035, 0.082);
-	vec3 mid = vec3(0.035, 0.07, 0.165);
-	vec3 hor = vec3(0.085, 0.13, 0.25);
-	vec3 col = mix(top, mid, smoothstep(0.0, h * 0.8, uv.y));
-	col = mix(col, hor, smoothstep(h * 0.55, h, uv.y));
-	// la luz fría de arriba a la izquierda
-	vec2 b = (uv - vec2(0.1, 0.0)) * vec2(asp * 0.55, 1.15);
-	col += vec3(0.04, 0.07, 0.17) * exp(-dot(b, b) * 2.2);
-	// el resplandor del núcleo sobre el aire
-	if (uPlanet.z > 0.0) {
-		vec2 e = (p - uPlanet.xy) / (uPlanet.z * 3.0);
-		col += vec3(0.30, 0.15, 0.045) * exp(-dot(e, e)) * (0.5 + 0.35 * uFlare);
-	}
-	// estrellas, que se apagan al bajar hacia el horizonte
-	vec2 su = uv * vec2(asp, 1.0);
-	float above = 1.0 - smoothstep(h - 0.18, h - 0.02, uv.y);
-	float st = starLayer(su, 92.0, 0.955, 0.13) + 0.6 * starLayer(su + 17.0, 170.0, 0.93, 0.16);
-	col += vec3(0.82, 0.88, 1.0) * st * above;
-
-	float y = uv.y - h;
-	if (y > -0.03) {
-		float yy = max(y, 0.0) + 0.04;
-		vec2 q = vec2((uv.x - 0.5) * asp / yy, 1.0 / yy) * 0.3;
-		q.y += uTime * 0.03;
-		vec2 w = vec2(fbm(q * 0.55 + vec2(7.3, 1.1)), fbm(q * 0.55 + vec2(2.9, 5.7)));
-		float n = fbm(q + w * 0.9);
-		float near = clamp(y * 3.0, 0.0, 1.0);
-		float cover = smoothstep(0.40 - near * 0.24, 0.62 - near * 0.14, n);
-		float lit = smoothstep(0.35, 0.85, n);
-		vec3 cloud = mix(vec3(0.04, 0.065, 0.125), vec3(0.15, 0.2, 0.32), lit);
-		// el fuego del núcleo enciende las crestas de debajo
-		if (uPlanet.z > 0.0) {
-			float dx = (p.x - uPlanet.x) / (uPlanet.z * 3.6);
-			float glow = exp(-dx * dx) * exp(-max(y, 0.0) * 5.0);
-			cloud += vec3(0.42, 0.21, 0.06) * glow * (0.35 + lit) * (0.65 + 0.35 * uFlare);
-		}
-		float fade = smoothstep(-0.03, 0.05, y);
-		col = mix(col, cloud, cover * fade);
-		col = mix(col, hor * 0.85, 0.55 * exp(-max(y, 0.0) * 24.0) * fade);
-	}
-	return col;
-}
-
-// La órbita: una línea fina; la mitad de atrás pasa detrás del núcleo.
-vec4 orbitLine(vec2 d, float side) {
-	vec2 e = rot(d, -uTilt);
-	vec2 q = vec2(e.x, e.y / SQUASH);
-	if (q.y * side < 0.0) return vec4(0.0);
-	float rr = length(q);
-	float w = length(vec2(q.x, q.y / SQUASH)) / max(rr, 1e-4) / uPlanet.z;
-	float a = exp(-pow((rr - ORBIT) / (w * 1.1), 2.0));
-	float th = atan(q.y, q.x);
-	// un brillo que recorre la órbita, muy tenue
-	float run = 0.5 + 0.5 * cos(th - uTime * 0.25);
-	vec3 col = mix(vec3(0.55, 0.65, 0.85), vec3(0.85, 0.9, 1.0), run);
-	float alpha = a * (side > 0.0 ? 0.42 : 0.2) * (0.75 + 0.25 * run);
-	return vec4(col, alpha);
-}
-
-// Un satélite: cuerpo y halo, con luz propia.
-void satellite(inout vec3 col, vec2 d, int i) {
-	vec4 s = uSat[i];
-	vec4 c = uSatCol[i];
-	vec2 l = (d - s.xy) / s.z;
-	float r = length(l);
-	float px = 1.0 / (uPlanet.z * s.z);
-	float body = 1.0 - smoothstep(1.0 - px, 1.0 + px, r);
-	float halo = exp(-r * r * 0.35);
-	vec3 core = mix(c.rgb, vec3(1.0), 0.45 * (1.0 - r));
-	col = mix(col, core, body * min(c.a, 1.0));
-	col += c.rgb * halo * 0.5 * c.a * (1.0 - body);
-}
-
-vec3 backdrop(vec2 p) {
-	vec3 col = sky(p);
-	if (uPlanet.z > 0.0) {
-		vec2 d = (p - uPlanet.xy) / uPlanet.z;
-		vec4 o = orbitLine(d, -1.0);
-		col = mix(col, o.rgb, o.a);
-		for (int i = 0; i < 16; i++) {
-			if (uSat[i].z > 0.0 && uSat[i].w < 0.0) satellite(col, d, i);
-		}
-	}
-	return col;
+	float tw = 0.6 + 0.4 * sin(uTime * (0.4 + h * 1.6) + h * 40.0);
+	return smoothstep(0.08, 0.0, d) * tw * (h - 0.93) / 0.07;
 }
 
 void main() {
+	// y hacia abajo, como el DOM, para compartir la curva con las horas.
 	vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
-	vec3 col = backdrop(p);
-	if (uPlanet.z > 0.0) {
-		vec2 c = uPlanet.xy;
-		float R = uPlanet.z;
-		vec2 d = (p - c) / R;
-		float r = length(d);
-		if (r < 1.0 + 2.0 / R) {
-			vec3 L = normalize(LIGHT);
-			float z = sqrt(max(1.0 - r * r, 0.0));
-			vec3 n = vec3(d, z);
-			// Vidrio macizo: lo de detrás se ve invertido y recogido, con un poco de dispersión.
-			vec2 inv = c - d * R * 0.58;
-			vec3 refr = vec3(backdrop(mix(p, inv, 0.88)).r, backdrop(mix(p, inv, 0.84)).gb);
-			vec3 inside = refr * vec3(0.8, 0.86, 1.0);
-			// el fuego: un núcleo incandescente que se mueve despacio
-			float rc = r / 0.6;
-			float heat = exp(-rc * rc * 2.6);
-			vec2 sw = rot(d, uTime * 0.12) * 2.6;
-			float molten = fbm(sw + vec2(uTime * 0.16, -uTime * 0.09));
-			heat *= 0.82 + 0.32 * molten;
-			heat *= 1.0 + 0.35 * uFlare + 0.04 * sin(uTime * 2.1);
-			vec3 ember = mix(vec3(0.78, 0.27, 0.05), vec3(1.0, 0.86, 0.62), smoothstep(0.3, 0.95, heat));
-			inside += ember * heat;
-			// un mapeo tonal suave: el fuego brilla sin quemarse a blanco
-			inside = vec3(1.0) - exp(-inside * 1.25);
-			// el canto del vidrio: frío arriba (la luz de la noche), cálido abajo (el fuego)
-			float fres = pow(1.0 - z, 3.0);
-			vec3 shell = mix(inside, vec3(0.7, 0.8, 1.0), fres * 0.55);
-			shell += pow(max(dot(n, normalize(L + vec3(0.0, 0.0, 1.0))), 0.0), 140.0) * 0.55;
-			vec2 dn = d / max(r, 1e-4);
-			float lit = dot(dn, -normalize(L.xy));
-			shell = mix(shell, vec3(0.8, 0.88, 1.0), smoothstep(0.86, 0.99, r) * smoothstep(0.15, 0.95, lit) * 0.45);
-			shell = mix(shell, vec3(1.0, 0.6, 0.25), smoothstep(0.88, 1.0, r) * smoothstep(0.2, 0.95, -lit) * 0.35);
-			float a = 1.0 - smoothstep(1.0 - 1.2 / R, 1.0 + 0.8 / R, r);
-			col = mix(col, shell, a);
-		}
-		vec4 fo = orbitLine(d, 1.0);
-		col = mix(col, fo.rgb, fo.a);
-		for (int i = 0; i < 16; i++) {
-			if (uSat[i].z > 0.0 && uSat[i].w > 0.0) satellite(col, d, i);
-		}
+	float w = uRes.x;
+	float apex = uBand.x * uRes.y;
+	float R = uBand.y * w;
+	vec2 c = vec2(w * 0.5, apex + R);
+	float Rp = R - uBand.w * w;
+	float d = length(p - c);
+	float s = uScale;
+
+	vec3 col = mix(NIGHT, NIGHT2, smoothstep(0.0, apex, p.y));
+	col += vec3(stars(p, 90.0)) * 0.55 * smoothstep(apex, apex * 0.55, p.y);
+
+	// el brillo de la banda en esta columna: suelo tranquilo + campanas de carga
+	float hx = (p.x / w - uBand.z) / (1.0 - 2.0 * uBand.z);
+	float k = 0.18;
+	for (int i = 0; i < ${MAX_LOAD}; i++) {
+		if (i >= uLoadN) break;
+		float e = (hx - uLoad[i].x) / 0.045;
+		k += uLoad[i].y * 0.8 * exp(-e * e);
 	}
-	vec2 uv = p / uRes;
-	vec3 ground = vec3(0.027, 0.047, 0.094);
-	col = mix(col, ground, uFade.x * (1.0 - smoothstep(0.0, 0.12, uv.y)));
-	col = mix(col, ground, uFade.y * smoothstep(0.86, 1.0, uv.y));
-	col += (hash(p + fract(uTime)) - 0.5) / 255.0;
+	k = min(k, 1.15);
+	k = k * (0.86 + 0.14 * sin(uTime * 0.5)) + 0.07 * sin(hx * 40.0 - uTime * 0.7);
+	if (uPulse > -0.5) {
+		float e = (hx - uPulse) / 0.046;
+		k = k * 0.75 + exp(-e * e) * 0.95;
+	}
+	k = max(k, 0.05);
+
+	// la banda: un trazo fino con su resplandor, por encima del limbo
+	float db = d - R;
+	float core = exp(-pow(db / (1.8 * s), 2.0));
+	float halo = exp(-pow(db / (15.0 * s), 2.0));
+	col += BANDC * halo * 0.42 * k + mix(BANDC, GLOW, 0.6) * core * 0.85 * k;
+
+	// la Tierra de noche y su limbo
+	if (d < Rp) {
+		float t = clamp((p.y - apex) / (uRes.y - apex + 1.0), 0.0, 1.0);
+		vec3 planet = mix(vec3(0.114, 0.102, 0.282), vec3(0.02, 0.02, 0.051), smoothstep(0.0, 0.9, t + abs(p.x - w * 0.5) / w));
+		col = mix(col, planet, smoothstep(Rp, Rp - 1.5 * s, d));
+	}
+	col += LIMB * exp(-pow((d - Rp) / (0.9 * s), 2.0)) * 0.55;
+
+	// las luces de las herramientas: ámbar tenue abajo; fijadas en su hora, claras y con anillo
+	for (int i = 0; i < ${MAX_LIGHTS}; i++) {
+		vec4 L = uLight[i];
+		if (L.w <= 0.0) continue;
+		float dl = length(p - L.xy);
+		vec3 tone = mix(TOOL, HELD, uLightTone[i].x);
+		col += tone * exp(-pow(dl / L.z, 2.0)) * L.w;
+		col += HELD * exp(-pow((dl - 9.0 * s) / (0.8 * s), 2.0)) * 0.35 * uLightTone[i].y;
+	}
+
 	outColor = vec4(col, 1.0);
 }`;
-
-const SQUASH = 0.29;
-const ORBIT = 1.55;
-const TILT = -0.28;
-/** Una vuelta completa de la órbita, en segundos. */
-const ORBIT_SECONDS = 80;
-/** Lo que tarda un despliegue en salir del núcleo y entrar en órbita. */
-const LAUNCH_SECONDS = 2.4;
-/** Los despliegues que se ven a la vez; el más viejo se apaga al llegar otro. */
-const KEEP = 7;
-/** El hueco entre un despliegue y el anterior en la órbita. */
-const SPACING = (Math.PI * 2) / KEEP;
-const TRAIL = 5;
-
-const HISTORY: [number, number, number] = [0.64, 0.72, 0.88];
-const LIVE: [number, number, number] = [0.27, 0.82, 0.5];
-const LAUNCH: [number, number, number] = [1.0, 0.78, 0.48];
-
-export interface DeployControl {
-	/** Un despliegue sale del núcleo. */
-	deploy: () => void;
-	/** El último despliegue está en vivo: se vuelve verde y el anterior se apaga. */
-	live: () => void;
-}
-
-interface Sat {
-	/** Su sitio en la órbita, relativo al giro. */
-	phi: number;
-	/** Cuándo salió del núcleo (segundos del lienzo). */
-	born: number;
-	live: boolean;
-	/** 0 → historial, 1 → en vivo; se acerca a su destino, no salta. */
-	liveMix: number;
-	/** Cuándo empezó a apagarse; -1 si sigue. */
-	dying: number;
-}
 
 function compile(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader | null {
 	const shader = gl.createShader(type);
@@ -269,27 +140,24 @@ function compile(gl: WebGL2RenderingContext, type: number, source: string): WebG
 	return shader;
 }
 
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+/** Luces de fondo que no suben: el resto de herramientas, quietas en la Tierra. */
+const IDLE = [0.18, 0.31, 0.43, 0.58, 0.71, 0.84];
 
 export function SkyCanvas({
-	planet,
-	control,
-	horizon,
-	fade = [0, 0],
-	quality = 1,
+	load = DEMO_DAY,
+	span = DAY_SPAN,
+	still = false,
 	onUnsupported,
 	className = "",
 }: {
-	/** El elemento cuadrado que reserva el sitio del núcleo (órbita incluida). Sin él, sólo cielo. */
-	planet?: RefObject<HTMLElement | null>;
-	/** Quien dirige los despliegues; sin él, el núcleo despliega solo. */
-	control?: MutableRefObject<DeployControl | null>;
-	/** Altura del horizonte, 0 arriba y 1 abajo. */
-	horizon: number;
-	/** Cuánto se funde con el suelo de la página arriba y abajo (0..1). */
-	fade?: [number, number];
-	/** Multiplicador de resolución; el cielo es suave y aguanta menos píxeles. */
-	quality?: number;
+	/** Lo que la persona tiene en el día; por defecto, el día de ejemplo (sintético). */
+	load?: DayLoad[];
+	/** Las horas que cubre la banda. */
+	span?: [number, number];
+	/** Un solo fotograma quieto, con lo importante fijado (la puerta de acceso). */
+	still?: boolean;
 	onUnsupported?: () => void;
 	className?: string;
 }) {
@@ -299,11 +167,14 @@ export function SkyCanvas({
 	useEffect(() => {
 		unsupported.current = onUnsupported;
 	}, [onUnsupported]);
-	const [fadeTop, fadeBottom] = fade;
+	const loadKey = JSON.stringify(load.slice(0, MAX_LOAD));
+	const [spanFrom, spanTo] = span;
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
+		const items: DayLoad[] = JSON.parse(loadKey);
+		const range: [number, number] = [spanFrom, spanTo];
 		const gl = canvas.getContext("webgl2", {
 			antialias: false,
 			alpha: false,
@@ -345,152 +216,91 @@ export function SkyCanvas({
 		const u = {
 			res: gl.getUniformLocation(program, "uRes"),
 			time: gl.getUniformLocation(program, "uTime"),
-			planet: gl.getUniformLocation(program, "uPlanet"),
-			tilt: gl.getUniformLocation(program, "uTilt"),
-			horizon: gl.getUniformLocation(program, "uHorizon"),
-			fade: gl.getUniformLocation(program, "uFade"),
-			flare: gl.getUniformLocation(program, "uFlare"),
-			sat: gl.getUniformLocation(program, "uSat"),
-			satCol: gl.getUniformLocation(program, "uSatCol"),
+			pulse: gl.getUniformLocation(program, "uPulse"),
+			scale: gl.getUniformLocation(program, "uScale"),
+			band: gl.getUniformLocation(program, "uBand"),
+			load: gl.getUniformLocation(program, "uLoad"),
+			loadN: gl.getUniformLocation(program, "uLoadN"),
+			light: gl.getUniformLocation(program, "uLight"),
+			lightTone: gl.getUniformLocation(program, "uLightTone"),
 		};
-		gl.uniform1f(u.horizon, horizon);
-		gl.uniform2f(u.fade, fadeTop, fadeBottom);
+		gl.uniform4f(u.band, BAND.apex, BAND.radius, BAND.inset, BAND.planetGap);
+		const loadData = new Float32Array(MAX_LOAD * 2);
+		items.forEach((it, i) => {
+			loadData[i * 2] = hourToX(it.hour, range);
+			loadData[i * 2 + 1] = Math.max(0, Math.min(1, it.weight));
+		});
+		gl.uniform2fv(u.load, loadData);
+		gl.uniform1i(u.loadN, items.length);
 
 		const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-		const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+		const frozen = reduce || still;
 
-		let scale = 1;
-		let planetPx: [number, number, number] = [0, 0, 0];
-		const satPos = new Float32Array(64);
-		const satCol = new Float32Array(64);
-
-		let time = 24; // arranca con las nubes ya formadas
-		let lastDeploy = -100;
-
-		// El historial de partida: cinco despliegues en órbita y el último en vivo.
-		const sats: Sat[] = [];
-		for (let i = 0; i < KEEP - 2; i++) {
-			const live = i === KEEP - 3;
-			sats.push({ phi: 0.6 - (KEEP - 3 - i) * -SPACING, born: -100, live, liveMix: live ? 1 : 0, dying: -1 });
-		}
-
-		const deploy = () => {
-			const newest = sats[sats.length - 1];
-			sats.push({ phi: (newest?.phi ?? 0) - SPACING, born: time, live: false, liveMix: 0, dying: -1 });
-			lastDeploy = time;
-			const alive = sats.filter((s) => s.dying < 0);
-			if (alive.length > KEEP) alive[0].dying = time;
-		};
-		const live = () => {
-			const newest = sats[sats.length - 1];
-			if (!newest) return;
-			for (const s of sats) s.live = false;
-			newest.live = true;
-		};
-		if (control) control.current = { deploy, live };
+		let w = 1;
+		let h = 1;
+		let unit = 1;
+		const lights = new Float32Array(MAX_LIGHTS * 4);
+		const tones = new Float32Array(MAX_LIGHTS * 2);
 
 		const measure = () => {
 			const rect = canvas.getBoundingClientRect();
 			const narrow = rect.width < 768;
-			scale = Math.min(window.devicePixelRatio || 1, 1.5) * quality * (narrow ? 0.75 : 1);
-			const w = Math.max(1, Math.round(rect.width * scale));
-			const h = Math.max(1, Math.round(rect.height * scale));
+			const scale = Math.min(window.devicePixelRatio || 1, 1.5) * (narrow ? 0.75 : 1);
+			w = Math.max(1, Math.round(rect.width * scale));
+			h = Math.max(1, Math.round(rect.height * scale));
+			unit = w / 1000;
 			if (canvas.width !== w || canvas.height !== h) {
 				canvas.width = w;
 				canvas.height = h;
 			}
 			gl.viewport(0, 0, w, h);
 			gl.uniform2f(u.res, w, h);
-			const anchor = planet?.current;
-			if (anchor) {
-				const a = anchor.getBoundingClientRect();
-				// El ancla guarda la órbita entera: su mitad es 1,62 radios.
-				planetPx = [(a.left + a.width / 2 - rect.left) * scale, (a.top + a.height / 2 - rect.top) * scale, (a.width / 2 / 1.62) * scale];
-			} else {
-				planetPx = [0, 0, 0];
-			}
+			gl.uniform1f(u.scale, unit);
 		};
 
-		// Paralaje del puntero: un muelle amortiguado, nunca un valor directo.
-		const pointer = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0 };
-		const onPointer = (e: PointerEvent) => {
-			pointer.tx = (e.clientX / window.innerWidth) * 2 - 1;
-			pointer.ty = (e.clientY / window.innerHeight) * 2 - 1;
+		/** Dónde está una luz de la Tierra: bajo el limbo, cerca de `hx`. */
+		const ground = (hx: number, row: number) => {
+			const top = bandPoint(hx, w, h);
+			return { x: top.x, y: top.y + (BAND.planetGap * w) + (22 + row * 13) * unit };
 		};
-		if (finePointer && !reduce && planet) window.addEventListener("pointermove", onPointer, { passive: true });
 
-		let last = 0;
-		let raf = 0;
-		let onScreen = true;
+		let time = 0;
 		let first = true;
-		let autoNext = time + 2;
-
-		const place = (slot: number, rad: number, th: number, tilt: number, size: number, rgb: [number, number, number], k: number, front?: boolean) => {
-			const cs = Math.cos(tilt);
-			const sn = Math.sin(tilt);
-			const s = Math.sin(th);
-			const ex = rad * Math.cos(th);
-			const ey = rad * s * SQUASH;
-			satPos[slot * 4] = cs * ex - sn * ey;
-			satPos[slot * 4 + 1] = sn * ex + cs * ey;
-			satPos[slot * 4 + 2] = size * (1 + 0.14 * s);
-			satPos[slot * 4 + 3] = (front ?? s >= 0) ? 1 : -1;
-			satCol[slot * 4] = rgb[0];
-			satCol[slot * 4 + 1] = rgb[1];
-			satCol[slot * 4 + 2] = rgb[2];
-			satCol[slot * 4 + 3] = k;
-		};
-
-		const draw = (dt: number) => {
-			// Sin director, el núcleo despliega solo: sale y, al llegar, está en vivo.
-			if (!control?.current && !reduce && time >= autoNext) {
-				deploy();
-				autoNext = time + 9;
-				setTimeout(() => live(), LAUNCH_SECONDS * 1000 + 600);
-			}
-			const ang = (time / ORBIT_SECONDS) * Math.PI * 2;
-			const tilt = TILT + pointer.x * 0.03;
-			satPos.fill(0);
-			satCol.fill(0);
+		const draw = () => {
+			lights.fill(0);
+			tones.fill(0);
+			const pulse = frozen ? -1 : pulseX(time * 1000, PULSE_MS);
 			let slot = 0;
-			for (let i = sats.length - 1; i >= 0; i--) {
-				const s = sats[i];
-				if (s.dying >= 0 && time - s.dying > 1.2) sats.splice(i, 1);
-			}
-			for (const s of sats) {
-				if (slot >= 16) break;
-				s.liveMix += ((s.live ? 1 : 0) - s.liveMix) * Math.min(1, dt * 3);
-				const fadeK = s.dying >= 0 ? Math.max(0, 1 - (time - s.dying) / 1.2) : 1;
-				const rgb: [number, number, number] = [
-					HISTORY[0] + (LIVE[0] - HISTORY[0]) * s.liveMix,
-					HISTORY[1] + (LIVE[1] - HISTORY[1]) * s.liveMix,
-					HISTORY[2] + (LIVE[2] - HISTORY[2]) * s.liveMix,
-				];
-				const age = time - s.born;
-				const thOrbit = ang + s.phi;
-				if (age < LAUNCH_SECONDS) {
-					// Sale del núcleo en espiral, con su estela detrás.
-					for (let j = TRAIL; j >= 0 && slot < 16; j--) {
-						const t = Math.max(0, age / LAUNCH_SECONDS - j * 0.045);
-						const e = easeOut(t);
-						const rad = 0.5 + (ORBIT - 0.5) * e;
-						const th = thOrbit - (1 - e) * 2.2;
-						const k = j === 0 ? 1.3 : 0.55 * (1 - j / (TRAIL + 1));
-						const size = j === 0 ? 0.06 : 0.05 * (1 - j / (TRAIL + 2));
-						place(slot++, rad, th, tilt, size, LAUNCH, k * fadeK, rad < 1.1 ? true : undefined);
-					}
-				} else {
-					const k = (0.72 + 0.5 * s.liveMix) * fadeK;
-					place(slot++, ORBIT, thOrbit, tilt, s.live ? 0.068 : 0.052, rgb, k);
-				}
-			}
-			const flare = time >= lastDeploy ? Math.exp(-(time - lastDeploy) * 1.4) : 0;
-			const [cx, cy, r] = planetPx;
-			gl.uniform3f(u.planet, cx + pointer.x * 10 * scale, cy + pointer.y * 6 * scale, r);
-			gl.uniform1f(u.tilt, tilt);
-			gl.uniform1f(u.flare, flare);
-			gl.uniform4fv(u.sat, satPos);
-			gl.uniform4fv(u.satCol, satCol);
+			// lo que importa: sube desde la Tierra hasta su hora cuando el pulso pasa
+			items.forEach((it, i) => {
+				if (slot >= MAX_LIGHTS) return;
+				const hx = hourToX(it.hour, range);
+				const from = ground(Math.min(1, Math.max(0, hx + (i % 2 ? 0.05 : -0.05))), i % 3);
+				const to = bandPoint(hx, w, h);
+				const r = frozen ? 1 : riseProgress(pulse, hx);
+				const e = easeInOut(r);
+				const held = r >= 1 ? 1 : 0;
+				lights[slot * 4] = from.x + (to.x - from.x) * e;
+				lights[slot * 4 + 1] = from.y + (to.y - from.y) * e;
+				lights[slot * 4 + 2] = (held ? 3.4 : 2) * unit;
+				lights[slot * 4 + 3] = r > 0 ? 0.65 + 0.35 * e : 0.45 + 0.2 * Math.sin(time * 1.3 + i * 1.7);
+				tones[slot * 2] = e;
+				tones[slot * 2 + 1] = held;
+				slot++;
+			});
+			// el resto: quietas, titilando apenas
+			IDLE.forEach((hx, i) => {
+				if (slot >= MAX_LIGHTS) return;
+				const at = ground(hx, (i + 1) % 3);
+				lights[slot * 4] = at.x;
+				lights[slot * 4 + 1] = at.y;
+				lights[slot * 4 + 2] = 1.7 * unit;
+				lights[slot * 4 + 3] = 0.3 + 0.18 * Math.sin(time * 1.1 + i * 2.3);
+				slot++;
+			});
+			gl.uniform4fv(u.light, lights);
+			gl.uniform2fv(u.lightTone, tones);
+			gl.uniform1f(u.pulse, pulse);
 			gl.uniform1f(u.time, time);
 			gl.drawArrays(gl.TRIANGLES, 0, 3);
 			if (first) {
@@ -499,23 +309,18 @@ export function SkyCanvas({
 			}
 		};
 
+		let last = 0;
+		let raf = 0;
+		let onScreen = true;
 		const frame = (now: number) => {
 			const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
 			last = now;
 			time += dt;
-			// muelle crítico: rigidez 40, amortiguación 2·√40
-			const k = 40;
-			const c = 2 * Math.sqrt(k);
-			pointer.vx += (k * (pointer.tx - pointer.x) - c * pointer.vx) * dt;
-			pointer.vy += (k * (pointer.ty - pointer.y) - c * pointer.vy) * dt;
-			pointer.x += pointer.vx * dt;
-			pointer.y += pointer.vy * dt;
-			draw(dt);
+			draw();
 			raf = requestAnimationFrame(frame);
 		};
-
 		const start = () => {
-			if (reduce || raf || !onScreen || document.hidden) return;
+			if (frozen || raf || !onScreen || document.hidden) return;
 			last = 0;
 			raf = requestAnimationFrame(frame);
 		};
@@ -526,10 +331,9 @@ export function SkyCanvas({
 
 		const resize = new ResizeObserver(() => {
 			measure();
-			if (reduce || !raf) draw(0);
+			if (frozen || !raf) draw();
 		});
 		resize.observe(canvas);
-		if (planet?.current) resize.observe(planet.current);
 
 		const io = new IntersectionObserver(([entry]) => {
 			onScreen = entry.isIntersecting;
@@ -550,23 +354,21 @@ export function SkyCanvas({
 		canvas.addEventListener("webglcontextlost", onLost);
 
 		measure();
-		draw(0);
+		draw();
 		start();
 
 		return () => {
 			stop();
-			if (control) control.current = null;
 			resize.disconnect();
 			io.disconnect();
 			document.removeEventListener("visibilitychange", onVisibility);
-			window.removeEventListener("pointermove", onPointer);
 			canvas.removeEventListener("webglcontextlost", onLost);
 			gl.deleteBuffer(buffer);
 			gl.deleteProgram(program);
 			gl.deleteShader(vs);
 			gl.deleteShader(fs);
 		};
-	}, [planet, control, horizon, fadeTop, fadeBottom, quality]);
+	}, [loadKey, spanFrom, spanTo, still]);
 
 	return (
 		<canvas
