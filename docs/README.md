@@ -15,7 +15,7 @@ El pin es a un **tag** de git, no a master (`v1.0.0`; consumidores: `onpilot` y
 El mundo visual es **provisional** (el «Clear Sky» de noche heredado) hasta el
 subproyecto 2, que define el mundo de OnPilot; los comentarios que nombran
 partners y developers describen piezas heredadas que hoy nadie consume. Ver
-`decisiones.md`. Las dependencias de runtime
+`decisiones.md` y lo que falta en `pendiente.md`. Las dependencias de runtime
 son `peerDependencies`; cada consumidor las deduplica (`dedupe` en su
 `vite.config.ts`) para que no haya dos React.
 

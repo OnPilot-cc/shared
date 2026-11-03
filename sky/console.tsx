@@ -578,7 +578,7 @@ export function Note({ title, children }: { title?: string; children: ReactNode 
 
 /**
  * Una caja de estado: un aviso que tiene que leerse antes de lo demás (la
- * solicitud en revisión, la suspensión, la cuenta de Stripe). El estado va en
+ * solicitud en revisión, la suspensión, la cuenta de cobro). El estado va en
  * su píldora con una palabra; el fondo rojo apagado sólo para lo que se paró.
  */
 export function StatusBox({
