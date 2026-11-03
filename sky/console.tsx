@@ -1,13 +1,12 @@
 /**
- * Las piezas de la consola, en el mundo «Clear Sky» de noche (2026-10-05).
+ * Las piezas de la consola, en el mundo «Airglow» (2026-11-03).
  *
- * Nació de la copia de OnDesk (la de sus cuatro consolas en «Clear Sky») con lo
- * propio de OnPilot encima: el sello `live`. Desde el subproyecto 4 vive en
- * `@onpilot/shared/sky` y la pintan onpilot, admin, partners y developers (con
- * el bloque de consola al final de `styles/sky.css`). La API es la de cuando era un pliego del mapa de
- * red, así que ninguna vista tuvo que cambiar para mudarse: la sección es
- * ahora una tarjeta que flota sobre la noche, el sello una píldora con su
- * palabra, el billete una píldora, el diálogo un panel sobre un velo oscuro.
+ * Vienen de las consolas de la familia; las pintan onpilot (el área con sesión)
+ * y admin, con el bloque de consola de `styles/sky.css`. La API es la de cuando
+ * eran un pliego del mapa de red, así que ninguna vista tuvo que cambiar para
+ * mudarse: la sección es una tarjeta blanca que flota sobre el suelo claro, el
+ * sello una píldora con su palabra en Geist Mono, el billete una píldora, el
+ * diálogo un panel sobre un velo tenue.
  *
  * Reglas que cumplen todas: el mensaje de un campo tiene su sitio antes de
  * aparecer; un estado se dice con una palabra, nunca sólo con un color; la
@@ -29,7 +28,7 @@ import { Check as CheckIcon, ChevronDown, CircleAlert, Copy, ExternalLink, MoreH
 import { useCopy } from "../lib/use-copy";
 import { useDismiss } from "./hooks";
 
-const ERROR_TEXT = "text-[#f6a49c]";
+const ERROR_TEXT = "text-(--sk-danger-fg)";
 
 // ─── la sección ──────────────────────────────────────────────────────────────
 
@@ -341,8 +340,9 @@ export function Breakable({ text }: { text: string }) {
 }
 
 /**
- * Un estado con su palabra: hielo para lo que está en marcha, niebla para lo
- * demás, coral para lo que se paró, y en verde sólo lo que sirve tráfico.
+ * Un estado con su palabra, en Geist Mono (lo que mide el agente): tinta para lo
+ * que está en marcha, niebla para lo demás, rojo apagado para lo que se paró y
+ * verde para lo que funciona.
  */
 export function Stamp({ tone = "outline", children }: { tone?: "solid" | "outline" | "alert" | "live"; children: ReactNode }) {
 	const cls =
@@ -540,7 +540,7 @@ export function Check({
 				<span
 					aria-hidden="true"
 					className="flex size-5 items-center justify-center rounded-[6px] bg-(--sk-surface) shadow-[inset_0_0_0_1px_var(--sk-hair-2)] transition-[background-color,box-shadow] duration-150 peer-checked:bg-(--sk-accent) peer-checked:shadow-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--sk-accent)">
-					{checked && <CheckIcon className="size-3.5 text-(--sk-night)" strokeWidth={3} />}
+					{checked && <CheckIcon className="size-3.5 text-white" strokeWidth={3} />}
 				</span>
 			</span>
 			<span className="min-w-0 text-[0.9375rem] leading-snug text-(--sk-ink-2)">{children}</span>
@@ -595,10 +595,10 @@ export function StatusBox({
 	footer?: ReactNode;
 }) {
 	return (
-		<div className={`rounded-[16px] p-4 md:p-5 ${tone === "alert" ? "bg-[rgba(246,164,156,0.09)]" : "bg-(--sk-ground)"}`}>
+		<div className={`rounded-[16px] p-4 md:p-5 ${tone === "alert" ? "bg-(--sk-danger-bg)" : "bg-(--sk-ground)"}`}>
 			<div className="flex flex-wrap items-center gap-x-3 gap-y-2">
 				{stamp}
-				<p className={`font-medium leading-snug ${tone === "alert" ? "text-[#f6a49c]" : "text-(--sk-ink)"}`}>{title}</p>
+				<p className={`font-medium leading-snug ${tone === "alert" ? "text-(--sk-danger-fg)" : "text-(--sk-ink)"}`}>{title}</p>
 			</div>
 			{children && <div className="mt-2 flex max-w-[72ch] flex-col gap-2 text-[0.9375rem] leading-relaxed text-(--sk-ink-2)">{children}</div>}
 			{footer && <div className="mt-4 flex flex-wrap items-center gap-3">{footer}</div>}

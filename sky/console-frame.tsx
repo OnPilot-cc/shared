@@ -1,6 +1,6 @@
 /**
- * El marco de consola de admin, partners y developers, en el mundo «Clear Sky»
- * de noche: la forma de una app de trabajo, la misma que la consola de onpilot.
+ * El marco de consola del admin, en el mundo «Airglow»: la forma de una app de
+ * trabajo, la misma que el área con sesión de onpilot.
  *
  * - A la izquierda, la barra lateral: la marca con el nombre de la consola, sus
  *   destinos (con un icono y, si hace falta, un estado: «3 past due») y, abajo,
@@ -10,12 +10,12 @@
  *   página se desplaza. `banner` va encima de todo si una consola lo necesita
  *   (admin lo usó para la franja del staff hasta el 2026-10-13; el rol va ahora
  *   en el menú de cuenta, `account.role`).
- * - En el centro, la página, en una columna de 74rem sobre la noche.
+ * - En el centro, la página, en una columna de 74rem sobre el suelo claro.
  *
  * Vive en `@onpilot/shared` y cada consola le pasa sus destinos. La raíz lleva
  * `site sk` para que el vocabulario del mapa que aún escriben las vistas se
- * pinte en la noche (bloque de consola de `styles/sky.css`). Mientras se ve, el
- * documento entero es de noche (`useNightDocument`).
+ * pinte en Airglow (bloque de consola de `styles/sky.css`). Mientras se ve, el
+ * documento entero lleva el suelo claro (`useDayDocument`).
  *
  * Salir: un enlace de cuenta con `href: "#signout"` cierra la sesión en el apex
  * (`signOutAndGo`) en vez de navegar; así ninguna consola necesita su propia
@@ -35,7 +35,7 @@ import { signOutAndGo } from "../lib/platform-client";
 import { Monogram, Stamp } from "./console";
 import { useDismiss } from "./hooks";
 import { Mark } from "./kit";
-import { useNightDocument } from "./night";
+import { useDayDocument } from "./day";
 
 export interface FrameCrumb {
 	label: string;
@@ -110,7 +110,7 @@ export function ConsoleFrame({
 	// El cajón recuerda en qué página se abrió: al navegar queda cerrado solo.
 	const [drawerAt, setDrawerAt] = useState<string | null>(null);
 	const drawerOpen = drawerAt === pathname;
-	useNightDocument();
+	useDayDocument();
 
 	useEffect(() => {
 		const el = sentinel.current;
@@ -198,7 +198,7 @@ export function ConsoleFrame({
 					<button
 						type="button"
 						aria-label="Close the menu"
-						className="absolute inset-0 bg-[rgba(3,8,20,0.6)] backdrop-blur-[2px]"
+						className="absolute inset-0 bg-[rgba(18,17,42,0.32)] backdrop-blur-[2px]"
 						onClick={() => setDrawerAt(null)}
 					/>
 					<aside className="sk-sheet sk-sidebar absolute inset-y-0 left-0 flex w-[min(20rem,86vw)] flex-col overflow-y-auto px-3 pb-4 pt-4 shadow-(--sk-shadow-3)">

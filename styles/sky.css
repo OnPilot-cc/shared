@@ -1285,6 +1285,7 @@
 	border-radius: 999px;
 	background: var(--sk-mist);
 	color: var(--sk-ink-2);
+	font-family: var(--sk-mono);
 	font-weight: 500;
 	font-size: 0.75rem;
 	letter-spacing: 0;
@@ -1297,6 +1298,10 @@
 .site.sk .stamp--alert {
 	background: #fbeceb;
 	color: #8f2219;
+}
+.site.sk .stamp--live {
+	background: var(--sk-success-bg);
+	color: var(--sk-success-fg);
 }
 
 /* campos */

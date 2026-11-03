@@ -2,8 +2,7 @@
 
 **El código común de las apps de OnPilot.** UI (`ui/`, `components/`), cliente
 CRUD y helpers (`lib/`, `hooks/`), el mundo visual y sus piezas (`styles/`,
-`sky/`) y tres módulos de worker (`worker/response`, `worker/email`,
-`worker/cookies`). Envía TypeScript crudo: lo compila el bundler de la app que
+`sky/`) y dos módulos de worker (`worker/response`, `worker/cookies`). Envía TypeScript crudo: lo compila el bundler de la app que
 lo consume.
 
 `ui/`, `lib/`, `hooks/`, `components/` y `sky/` asumen el DOM; `worker/` asume
@@ -30,26 +29,29 @@ con el mismo vocabulario de clases. Las piezas:
 
 | Qué | Dónde | Quién lo consume |
 |---|---|---|
-| El mundo: tokens, tipografía, píldoras, tarjetas, vidrio, héroe y paneles de cielo, páginas interiores, el **bloque de consola** (el vocabulario del mapa reinterpretado en Airglow) y la barra lateral | `styles/sky.css` (sobre `styles/site.css`) | los cuatro repos, desde su `index.css` |
-| El kit del sitio: marca, píldora, flecha; cabecera de página con el cielo, sección, aro, recorrido en pasos, preguntas, control segmentado, cierre | `sky/kit.tsx`, `sky/page.tsx`, `sky/sky-canvas.tsx`, `sky/night.ts`, `sky/hooks.ts` | onpilot (envuelto en `features/frontend/sky/page.tsx`), partners, developers |
-| El documento de referencia: dos rieles, filtro, índice móvil y los bloques comunes | `sky/reference.tsx` | partners (`/programme`), developers (`/docs`) |
-| El marco de consola: barra lateral con destinos, barra superior con el rastro y la cuenta, salida por `#signout` | `sky/console-frame.tsx` | admin, partners (`/dashboard`) |
-| Las piezas de consola: `Section`, `CallingAt`, `Masthead`, `Stamp`, campos, `StatusBox`, `Note`, `SaveRow`, `SheetDialog`… | `sky/console.tsx`, `lib/use-copy.ts` | onpilot (consola de apps), admin, partners |
-| El cliente de plataforma: `platformOrigin()` (`VITE_PLATFORM_ORIGIN`; localhost → `:8800`), `api()` con credenciales, `fetchMe()`, `signInUrl()`, `signOutAndGo()` | `lib/platform-client.ts` | admin, partners, developers |
+| El mundo: tokens, tipografía, píldoras, tarjetas, vidrio, paneles de cielo y su respaldo `.sk-band`, páginas interiores, el **bloque de consola** (el vocabulario del mapa reinterpretado en Airglow), la barra lateral y las piezas de Airglow | `styles/sky.css` (sobre `styles/site.css`) | onpilot y admin, desde su `index.css` |
+| La marca «Órbita con hueco» como datos (`MARK`, `MARK_COLORS`, `markSvg`) y en React (`Mark`, `Wordmark`); la píldora y la flecha | `sky/mark.ts`, `sky/kit.tsx` | onpilot, admin; `markSvg` lo copia `onpilot/scripts/render-brand.mjs` |
+| El cielo «Lectura»: la lógica sin DOM (horas, brillo por carga, pulso, subida, `DEMO_DAY`), el shader y las horas en Geist Mono | `sky/airglow.ts`, `sky/sky-canvas.tsx`, `sky/sky-hours.tsx` | onpilot (sitio y puerta) |
+| Las piezas de Airglow: `ItemLabel` (herramienta · tipo · hora), `DayLine` (la frase del día), `ExampleSeam` (la costura de ejemplo) | `sky/airglow-kit.tsx` | onpilot |
+| El kit de página: cabecera en panel de cielo, sección, aro, recorrido en pasos, preguntas, control segmentado, cierre; el documento de día | `sky/page.tsx`, `sky/day.ts`, `sky/hooks.ts` | onpilot (envuelto en `features/frontend/sky/page.tsx`) |
+| El marco de consola: barra lateral con destinos, barra superior con el rastro y la cuenta, salida por `#signout` | `sky/console-frame.tsx` | admin |
+| Las piezas de consola: `Section`, `CallingAt`, `Masthead`, `Stamp`, campos, `StatusBox`, `Note`, `SaveRow`, `SheetDialog`… | `sky/console.tsx`, `lib/use-copy.ts` | onpilot (área con sesión), admin |
+| El cliente de plataforma: `platformOrigin()` (`VITE_PLATFORM_ORIGIN`; localhost → `:8800`), `api()` con credenciales, `fetchMe()`, `signInUrl()`, `signOutAndGo()` | `lib/platform-client.ts` | admin |
 
 Reglas que las piezas ya cumplen y que un consumidor no debe deshacer (están
 en la cabecera de `sky.css` y en el `DESIGN.md` de `onpilot`): sólo claro, con
 la noche dentro de los paneles de cielo; el violeta como único acento; la banda
 sólo dentro del cielo; Geist, y Geist Mono sólo en lo que mide el agente;
-sombra o línea, nunca las dos; vidrio sólo donde algo flota. Los iconos se tipan por su forma (`IconComponent`) porque
-cada consumidor trae su propia copia de lucide-react.
+sombra o línea, nunca las dos; vidrio sólo donde algo flota; toda carga
+inventada lleva su costura de ejemplo. Los iconos se tipan por su forma
+(`IconComponent`) porque cada consumidor trae su propia copia de lucide-react.
 
 ## Módulos
 
 <!-- BEGIN generated:modules -->
 <!-- No edites aquí: lo reescribe `npm run docs`. -->
 
-Módulos de las carpetas publicadas (58), con la primera línea de su comentario de cabecera.
+Módulos de las carpetas publicadas (56), con la primera línea de su comentario de cabecera.
 
 | Archivo | Qué hace |
 | --- | --- |
@@ -67,8 +69,8 @@ Módulos de las carpetas publicadas (58), con la primera línea de su comentario
 | [`sky/airglow-kit.tsx`](../sky/airglow-kit.tsx) | Las piezas que Airglow añade al kit de la casa, sacadas de lo que el mundo tomó en su ronda de dirección: |
 | [`sky/airglow.test.ts`](../sky/airglow.test.ts) | La lógica del cielo «Lectura»: horas a lo ancho de la banda, brillo por carga, el pulso de lectura y la subida de lo que importa. |
 | [`sky/airglow.ts`](../sky/airglow.ts) | La lógica del cielo «Lectura», sin DOM: dónde cae cada hora en la banda, cuánto brilla la banda según lo que la persona tiene a esa hora, por dónde va el pulso de… |
-| [`sky/console-frame.tsx`](../sky/console-frame.tsx) | El marco de consola de admin, partners y developers, en el mundo «Clear Sky» de noche: la forma de una app de trabajo, la misma que la consola de onpilot. |
-| [`sky/console.tsx`](../sky/console.tsx) | Las piezas de la consola, en el mundo «Clear Sky» de noche (2026-10-05). |
+| [`sky/console-frame.tsx`](../sky/console-frame.tsx) | El marco de consola del admin, en el mundo «Airglow»: la forma de una app de trabajo, la misma que el área con sesión de onpilot. |
+| [`sky/console.tsx`](../sky/console.tsx) | Las piezas de la consola, en el mundo «Airglow» (2026-11-03). |
 | [`sky/day.test.tsx`](../sky/day.test.tsx) | El documento de día: mientras se ve una página de Airglow, `<html>` y la barra del navegador llevan el suelo claro, y al salir vuelven a lo que había. |
 | [`sky/day.ts`](../sky/day.ts) | El documento entero lleva el suelo claro de Airglow mientras se ve una página del mundo: el fondo de `<html>` (lo que asoma en el rebote del scroll) y el color de la… |
 | [`sky/hooks.ts`](../sky/hooks.ts) | Hooks de scroll y de montaje contra los que se animan las páginas de Clear Sky, y los tres que usan las piezas de consola de `console.tsx` (`useFlash`, `useDismiss`,… |
@@ -80,7 +82,6 @@ Módulos de las carpetas publicadas (58), con la primera línea de su comentario
 | [`sky/platform-client.test.ts`](../sky/platform-client.test.ts) | El cliente de plataforma: la URL de entrada, las credenciales en cada llamada, la frase del servidor y un solo refresh. |
 | [`sky/platform-origin-local.test.ts`](../sky/platform-origin-local.test.ts) | En local, una consola habla con el `wrangler pages dev` de onpilot (puerto 8800). |
 | [`sky/platform-origin.test.ts`](../sky/platform-origin.test.ts) | Sin `VITE_PLATFORM_ORIGIN`, una consola en un subdominio habla con el apex de producción. |
-| [`sky/reference.tsx`](../sky/reference.tsx) | Un documento de referencia en el mundo «Clear Sky» de noche: las condiciones del programa de partners (`/programme`) y la documentación de developers (`/docs`). |
 | [`sky/sky-canvas.test.tsx`](../sky/sky-canvas.test.tsx) | El cielo «Lectura»: sin WebGL2 avisa y deja el respaldo de CSS, el lienzo es decorativo y las horas van en Geist Mono. |
 | [`sky/sky-canvas.tsx`](../sky/sky-canvas.tsx) | El cielo de OnPilot, «Lectura»: un solo shader WebGL2, sin dependencias. |
 | [`sky/sky-hours.tsx`](../sky/sky-hours.tsx) | Las horas de la banda, en DOM y en Geist Mono (lo que mide el agente): el shader no escribe texto. |
@@ -109,7 +110,6 @@ Módulos de las carpetas publicadas (58), con la primera línea de su comentario
 | [`ui/textarea.tsx`](../ui/textarea.tsx) | El campo de varias líneas, con el trazo del mundo; lo mide su `rows`. |
 | [`ui/tooltip.tsx`](../ui/tooltip.tsx) | La nota al pie de un control: tinta sobre papel, en el corte condensado, sin flecha ni radio. |
 | [`worker/cookies.ts`](../worker/cookies.ts) | Lectura de cookies, y nada más. |
-| [`worker/email.ts`](../worker/email.ts) | Email transaccional para las notificaciones de la plataforma. |
 | [`worker/response.ts`](../worker/response.ts) | Las tres respuestas JSON que devuelve cualquier handler de Pages Functions. |
 
 <!-- END generated:modules -->
