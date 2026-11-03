@@ -51,7 +51,7 @@ inventada lleva su costura de ejemplo. Los iconos se tipan por su forma
 <!-- BEGIN generated:modules -->
 <!-- No edites aquí: lo reescribe `npm run docs`. -->
 
-Módulos de las carpetas publicadas (56), con la primera línea de su comentario de cabecera.
+Módulos de las carpetas publicadas (55), con la primera línea de su comentario de cabecera.
 
 | Archivo | Qué hace |
 | --- | --- |
@@ -77,7 +77,6 @@ Módulos de las carpetas publicadas (56), con la primera línea de su comentario
 | [`sky/kit.tsx`](../sky/kit.tsx) | Las piezas del mundo de OnPilot («Airglow»): la marca, la píldora y la flecha. |
 | [`sky/mark.test.ts`](../sky/mark.test.ts) | La marca Órbita con hueco: el aro se abre donde está el punto, y nada de la órbita inclinada heredada. |
 | [`sky/mark.ts`](../sky/mark.ts) | La marca de OnPilot, «Órbita con hueco», como datos: un núcleo de tinta, un aro violeta que se abre donde está el punto, y el punto que abre su propio camino. |
-| [`sky/night.ts`](../sky/night.ts) | Puente mientras los consumidores pasan a `day.ts`: el documento ya no es de noche. |
 | [`sky/page.tsx`](../sky/page.tsx) | Las piezas de página del mundo de OnPilot («Airglow»), las del sitio de onpilot: la cabecera de página con su panel de cielo, el encabezado de sección, el aro de icono,… |
 | [`sky/platform-client.test.ts`](../sky/platform-client.test.ts) | El cliente de plataforma: la URL de entrada, las credenciales en cada llamada, la frase del servidor y un solo refresh. |
 | [`sky/platform-origin-local.test.ts`](../sky/platform-origin-local.test.ts) | En local, una consola habla con el `wrangler pages dev` de onpilot (puerto 8800). |
