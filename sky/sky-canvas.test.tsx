@@ -52,3 +52,31 @@ describe("SkyHours", () => {
 		expect(host.firstElementChild?.getAttribute("aria-hidden")).toBe("true");
 	});
 });
+
+describe("SkyCanvas still", () => {
+	class Quiet {
+		observe() {}
+		disconnect() {}
+	}
+	/** Un contexto WebGL2 que acepta todo: cada propiedad es una función que devuelve algo verdadero. */
+	const fakeGl = new Proxy({}, { get: () => () => ({}) });
+
+	beforeEach(() => {
+		globalThis.ResizeObserver = Quiet as unknown as typeof ResizeObserver;
+		globalThis.IntersectionObserver = Quiet as unknown as typeof IntersectionObserver;
+		vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(fakeGl as unknown as RenderingContext);
+	});
+
+	it("without still the reading loop starts", () => {
+		const raf = vi.spyOn(window, "requestAnimationFrame").mockReturnValue(1);
+		act(() => root.render(<SkyCanvas />));
+		expect(raf).toHaveBeenCalled();
+	});
+
+	it("with still it paints one frame and never starts the loop", () => {
+		const raf = vi.spyOn(window, "requestAnimationFrame").mockReturnValue(1);
+		act(() => root.render(<SkyCanvas still />));
+		expect(raf).not.toHaveBeenCalled();
+		expect(host.querySelector("canvas")?.getAttribute("data-ready")).toBe("true");
+	});
+});
