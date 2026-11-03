@@ -459,46 +459,60 @@
 /* ── lo que se escribe sobre el cielo ────────────────────────────────────────
    Dentro de un panel de noche la jerarquía es la misma; sólo cambia la tinta.
    La píldora primaria se invierte (tinta de la noche sobre la noche), el enlace
-   se enciende en el brillo de la banda y el vidrio es apenas un velo claro. */
+   se enciende en el brillo de la banda y el vidrio es apenas un velo claro.
+   `.sk-night` es el mismo ámbito para un contenedor que lleva el cielo como
+   capa de fondo (el héroe: el cielo, el lienzo y el texto son hermanos). */
+.sk .sk-night .sk-display,
 .sk .sk-hero-sky .sk-display,
 .sk .sk-skyfill .sk-display,
+.sk .sk-night .sk-h2,
 .sk .sk-hero-sky .sk-h2,
 .sk .sk-skyfill .sk-h2,
+.sk .sk-night .sk-h3,
 .sk .sk-hero-sky .sk-h3,
 .sk .sk-skyfill .sk-h3 {
 	color: var(--sk-night-ink);
 }
+.sk .sk-night .sk-body,
 .sk .sk-hero-sky .sk-body,
 .sk .sk-skyfill .sk-body,
+.sk .sk-night .sk-small,
 .sk .sk-hero-sky .sk-small,
 .sk .sk-skyfill .sk-small,
+.sk .sk-night .sk-note,
 .sk .sk-hero-sky .sk-note,
 .sk .sk-skyfill .sk-note {
 	color: var(--sk-night-ink-2);
 }
+.sk .sk-night .sk-pill,
 .sk .sk-hero-sky .sk-pill,
 .sk .sk-skyfill .sk-pill {
 	background: rgba(239, 238, 251, 0.1);
 	color: var(--sk-night-ink-2);
 }
+.sk .sk-night .sk-btn--primary,
 .sk .sk-hero-sky .sk-btn--primary,
 .sk .sk-skyfill .sk-btn--primary {
 	background: var(--sk-night-ink);
 	color: var(--sk-night);
 	box-shadow: 0 8px 24px -10px rgba(239, 238, 251, 0.35);
 }
+.sk .sk-night .sk-btn--quiet,
 .sk .sk-hero-sky .sk-btn--quiet,
 .sk .sk-skyfill .sk-btn--quiet,
+.sk .sk-night .sk-link,
 .sk .sk-hero-sky .sk-link,
 .sk .sk-skyfill .sk-link {
 	color: var(--sk-night-ink);
 }
+.sk .sk-night .sk-btn--glass,
 .sk .sk-hero-sky .sk-btn--glass,
 .sk .sk-skyfill .sk-btn--glass {
 	background: rgba(239, 238, 251, 0.1);
 	color: var(--sk-night-ink);
 	box-shadow: inset 0 0 0 1px rgba(239, 238, 251, 0.14);
 }
+.sk .sk-night :focus-visible,
 .sk .sk-hero-sky :focus-visible,
 .sk .sk-skyfill :focus-visible {
 	outline-color: #cfc6ff;
@@ -1653,4 +1667,58 @@
 	line-height: 1;
 	color: var(--sk-night-ink-2);
 	opacity: 0.8;
+}
+
+/* ── las piezas de Airglow (`airglow-kit.tsx`) ────────────────────────────── */
+/* la etiqueta de una cosa: herramienta · tipo · hora, la hora en el acento */
+.sk .sk-item-label {
+	font-size: 0.75rem;
+	line-height: 1.4;
+	color: var(--sk-ink-3);
+}
+.sk .sk-item-label time {
+	color: var(--sk-accent);
+}
+.sk .sk-night .sk-item-label,
+.sk .sk-hero-sky .sk-item-label,
+.sk .sk-skyfill .sk-item-label {
+	color: var(--sk-night-ink-2);
+}
+.sk .sk-night .sk-item-label time,
+.sk .sk-hero-sky .sk-item-label time,
+.sk .sk-skyfill .sk-item-label time {
+	color: var(--sk-band-glow);
+}
+/* la frase del día: cuerpo un paso más grande, las cifras en tinta */
+.sk .sk-dayline {
+	font-size: 1.0625rem;
+	line-height: 1.55;
+	letter-spacing: -0.012em;
+	color: var(--sk-ink-2);
+	text-wrap: pretty;
+}
+.sk .sk-dayline strong {
+	font-weight: 500;
+	color: var(--sk-ink);
+}
+/* la costura honesta: «Example» a la vista, en voz pequeña y con su aro */
+.sk .sk-seam {
+	display: inline-flex;
+	align-items: center;
+	height: 22px;
+	padding: 0 9px;
+	border-radius: 999px;
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.01em;
+	color: var(--sk-ink-3);
+	box-shadow: inset 0 0 0 1px var(--sk-hair-2);
+	background: var(--sk-surface);
+}
+.sk .sk-night .sk-seam,
+.sk .sk-hero-sky .sk-seam,
+.sk .sk-skyfill .sk-seam {
+	color: var(--sk-night-ink-2);
+	background: rgba(239, 238, 251, 0.06);
+	box-shadow: inset 0 0 0 1px rgba(239, 238, 251, 0.18);
 }

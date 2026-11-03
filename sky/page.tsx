@@ -1,9 +1,8 @@
 /**
- * Las piezas de página del mundo de OnPilot («Clear Sky» de noche), compartidas
- * por el sitio de onpilot y las páginas públicas de partners y developers: la
- * cabecera de página con su cielo, el encabezado de sección, el aro de icono,
- * el recorrido en pasos, las preguntas, el control segmentado y el cierre. Las
- * mismas formas que `ondesk/src/features/frontend/sky/page.tsx`.
+ * Las piezas de página del mundo de OnPilot («Airglow»), las del sitio de
+ * onpilot: la cabecera de página con su panel de cielo, el encabezado de
+ * sección, el aro de icono, el recorrido en pasos, las preguntas, el control
+ * segmentado y el cierre. Las mismas formas que las páginas de las hermanas.
  *
  * Sin edición ni sesión dentro: reciben hrefs y etiquetas ya resueltos. onpilot
  * los envuelve (`features/frontend/sky/page.tsx`) para pasar los enlaces por su
@@ -12,12 +11,16 @@
  *
  * Reglas que estas piezas ya cumplen y que una página no debe deshacer: sin
  * antetítulos sobre los titulares (el titular habla solo), sin ordinales como
- * adorno, el ámbar como único acento, el verde sólo para `live`, vidrio sólo
- * sobre el cielo.
+ * adorno, el violeta como único acento, la banda sólo dentro del cielo, vidrio
+ * sólo donde algo flota. Un cielo que muestra una carga inventada lleva su
+ * costura «Example» (`seam`); sin `load`, la banda es el suelo tranquilo.
  */
-import { useRef, useState, type ComponentType } from "react";
+import { useState, type ComponentType } from "react";
 import { ChevronDown } from "lucide-react";
+import type { DayLoad } from "./airglow";
+import { ExampleSeam } from "./airglow-kit";
 import { SkyCanvas } from "./sky-canvas";
+import { SkyHours } from "./sky-hours";
 import { SkArrow, SkButton } from "./kit";
 
 /**
@@ -30,59 +33,61 @@ export type IconComponent = ComponentType<{ className?: string; strokeWidth?: nu
 // ─── la cabecera de página ───────────────────────────────────────────────────
 
 /**
- * La cabecera de una página interior: el cielo nocturno con su mar de nubes
- * abajo, el titular y la entradilla a la izquierda. Con `core`, el núcleo ocupa
- * la derecha y despliega solo; con `aside`, otra cosa ocupa ese sitio.
- * `children` va debajo de la entradilla: botones, una nota.
+ * La cabecera de una página: un panel de cielo dentro de la columna, bajo la
+ * cabecera clara del sitio. Arriba, el titular y la entradilla; abajo, la
+ * Tierra de noche con la banda y sus horas. Con `load` la banda brilla según
+ * ese día y entonces `seam` (la costura «Example», ya traducida) es
+ * obligatoria; sin `load`, el suelo tranquilo. `aside` ocupa la derecha desde
+ * `lg`; `children` va debajo de la entradilla: botones, una nota.
  */
 export function PageHero({
 	title,
 	lead,
 	children,
-	core,
 	aside,
+	load = [],
+	seam,
 }: {
 	title: React.ReactNode;
 	lead?: React.ReactNode;
 	children?: React.ReactNode;
-	core?: boolean;
 	aside?: React.ReactNode;
+	load?: DayLoad[];
+	seam?: string;
 }) {
-	const anchor = useRef<HTMLDivElement>(null);
 	const [noGl, setNoGl] = useState(false);
-	const split = Boolean(core || aside);
+	const split = Boolean(aside);
 
 	return (
-		<section className="sk-page-hero">
-			<div className="sk-hero-sky absolute inset-0" aria-hidden="true" />
-			{!noGl && (
-				<SkyCanvas onUnsupported={() => setNoGl(true)} />
-			)}
-			<div className={`sk-wrap relative grid items-center gap-y-6 pb-20 pt-14 md:pb-28 md:pt-20 ${split ? "lg:grid-cols-12 lg:gap-x-10" : ""}`}>
-				<div className={split ? "lg:col-span-7" : "max-w-3xl"}>
-					<h1 className={`sk-display sk-rise text-[2.5rem] sm:text-[3.25rem] ${split ? "lg:text-[3.25rem]" : "lg:text-[3.75rem]"}`}>{title}</h1>
-					{lead && (
-						<p className="sk-body sk-rise mt-6 max-w-2xl text-[1.0625rem] md:text-lg" style={{ "--i": 1 } as React.CSSProperties}>
-							{lead}
-						</p>
-					)}
-					{children && (
-						<div className="sk-rise mt-8" style={{ "--i": 2 } as React.CSSProperties}>
-							{children}
+		<section className="sk-wrap pt-2">
+			<div className="sk-panel sk-hero-sky sk-band">
+				{!noGl && <SkyCanvas load={load} onUnsupported={() => setNoGl(true)} />}
+				<SkyHours />
+				{seam && (
+					<div className="absolute bottom-4 right-4 z-10 md:bottom-5 md:right-6">
+						<ExampleSeam label={seam} />
+					</div>
+				)}
+				<div className={`relative grid items-start gap-y-6 px-6 pb-40 pt-12 sm:px-10 md:pb-48 md:pt-16 lg:px-14 ${split ? "lg:grid-cols-12 lg:gap-x-10" : ""}`}>
+					<div className={split ? "lg:col-span-7" : "max-w-3xl"}>
+						<h1 className={`sk-display sk-rise text-[2.5rem] sm:text-[3.25rem] ${split ? "lg:text-[3.25rem]" : "lg:text-[3.75rem]"}`}>{title}</h1>
+						{lead && (
+							<p className="sk-body sk-rise mt-6 max-w-2xl text-[1.0625rem] md:text-lg" style={{ "--i": 1 } as React.CSSProperties}>
+								{lead}
+							</p>
+						)}
+						{children && (
+							<div className="sk-rise mt-8" style={{ "--i": 2 } as React.CSSProperties}>
+								{children}
+							</div>
+						)}
+					</div>
+					{aside && (
+						<div className="sk-rise lg:col-span-5" style={{ "--i": 2 } as React.CSSProperties}>
+							{aside}
 						</div>
 					)}
 				</div>
-				{core && (
-					<div className="lg:col-span-5">
-						<div ref={anchor} className="relative mx-auto -my-4 aspect-square w-full max-w-72 lg:my-0 lg:max-w-none">
-						</div>
-					</div>
-				)}
-				{!core && aside && (
-					<div className="sk-rise lg:col-span-5" style={{ "--i": 2 } as React.CSSProperties}>
-						{aside}
-					</div>
-				)}
 			</div>
 		</section>
 	);
@@ -139,7 +144,7 @@ export function Bead({ icon: Icon, size = "md", variant = "line" }: { icon: Icon
 	);
 }
 
-/** Un recorrido en pasos: aros unidos por una órbita punteada. Los pasos se nombran por lo que hacen. */
+/** Un recorrido en pasos: aros unidos por una línea punteada. Los pasos se nombran por lo que hacen. */
 export function StepList({ steps }: { steps: { icon: IconComponent; title: string; desc: React.ReactNode }[] }) {
 	// Cinco pasos no caben en cinco columnas hasta `lg`: antes van de dos en dos y
 	// la órbita, que sólo une una fila, se calla.
@@ -147,7 +152,7 @@ export function StepList({ steps }: { steps: { icon: IconComponent; title: strin
 	const cols = wide ? "sm:grid-cols-2 lg:grid-cols-5" : steps.length === 4 ? "md:grid-cols-4" : steps.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3";
 	return (
 		<ol className={`relative grid gap-10 md:gap-8 ${cols}`}>
-			<span className={`sk-orbit-line absolute left-6 right-12 top-6 hidden h-px ${wide ? "lg:block" : "md:block"}`} aria-hidden="true" />
+			<span className={`sk-route-line absolute left-6 right-12 top-6 hidden h-px ${wide ? "lg:block" : "md:block"}`} aria-hidden="true" />
 			{steps.map((step) => (
 				<li key={step.title} className="relative">
 					<Bead icon={step.icon} size="lg" />
@@ -180,7 +185,7 @@ export function Faq({ items }: { items: { q: string; a: React.ReactNode }[] }) {
 
 // ─── controles ───────────────────────────────────────────────────────────────
 
-/** Un control segmentado: un riel oscuro, la opción elegida en hielo. */
+/** Un control segmentado: un riel de niebla, la opción elegida en blanco. */
 export function Segmented<T extends string>({
 	value,
 	options,
@@ -206,8 +211,9 @@ export function Segmented<T extends string>({
 // ─── el cierre ───────────────────────────────────────────────────────────────
 
 /**
- * El cierre de cada página: un panel con el cielo vivo, el titular y las dos
- * acciones. Quien lo monta decide la primaria (onpilot la cambia con la sesión).
+ * El cierre de cada página: un panel de cielo con la banda leyendo (sin carga:
+ * nada inventado), el titular y las dos acciones. Quien lo monta decide la
+ * primaria (onpilot la cambia con la sesión).
  */
 export function Closing({
 	headline,
@@ -224,10 +230,10 @@ export function Closing({
 
 	return (
 		<section className="sk-wrap pb-6 pt-20 md:pt-28">
-			<div className="sk-panel relative">
-				<div className="sk-hero-sky absolute inset-0" aria-hidden="true" />
-				{!noGl && <SkyCanvas onUnsupported={() => setNoGl(true)} />}
-				<div className="relative max-w-2xl px-6 py-16 sm:px-12 md:py-24 lg:px-16">
+			<div className="sk-panel sk-hero-sky sk-band">
+				{!noGl && <SkyCanvas load={[]} onUnsupported={() => setNoGl(true)} />}
+				<SkyHours />
+				<div className="relative max-w-2xl px-6 pb-40 pt-14 sm:px-12 md:pb-48 md:pt-20 lg:px-16">
 					<h2 className="sk-h2 text-[2.25rem] md:text-[3.25rem]">{headline}</h2>
 					{desc && <p className="sk-body mt-5 max-w-lg text-[1.0625rem]">{desc}</p>}
 					<div className="mt-9 flex flex-wrap items-center gap-2">

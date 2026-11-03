@@ -49,7 +49,7 @@ cada consumidor trae su propia copia de lucide-react.
 <!-- BEGIN generated:modules -->
 <!-- No edites aquí: lo reescribe `npm run docs`. -->
 
-Módulos de las carpetas publicadas (56), con la primera línea de su comentario de cabecera.
+Módulos de las carpetas publicadas (58), con la primera línea de su comentario de cabecera.
 
 | Archivo | Qué hace |
 | --- | --- |
@@ -63,6 +63,8 @@ Módulos de las carpetas publicadas (56), con la primera línea de su comentario
 | [`lib/use-copy.ts`](../lib/use-copy.ts) | Copiar, hecho una sola vez para todo el proyecto: la misma implementación que partners y developers, la que usa `CopyTicket` en `console.tsx`. |
 | [`lib/utils.ts`](../lib/utils.ts) | `cn` — juntar clases de Tailwind sin que se peleen entre ellas. |
 | [`lib/vite-env.d.ts`](../lib/vite-env.d.ts) | Las variables de build que lee el paquete (`import.meta.env`). |
+| [`sky/airglow-kit.test.tsx`](../sky/airglow-kit.test.tsx) | Las piezas de Airglow: la etiqueta herramienta · tipo · hora en Geist Mono, la frase del día y la costura de ejemplo. |
+| [`sky/airglow-kit.tsx`](../sky/airglow-kit.tsx) | Las piezas que Airglow añade al kit de la casa, sacadas de lo que el mundo tomó en su ronda de dirección: |
 | [`sky/airglow.test.ts`](../sky/airglow.test.ts) | La lógica del cielo «Lectura»: horas a lo ancho de la banda, brillo por carga, el pulso de lectura y la subida de lo que importa. |
 | [`sky/airglow.ts`](../sky/airglow.ts) | La lógica del cielo «Lectura», sin DOM: dónde cae cada hora en la banda, cuánto brilla la banda según lo que la persona tiene a esa hora, por dónde va el pulso de… |
 | [`sky/console-frame.tsx`](../sky/console-frame.tsx) | El marco de consola de admin, partners y developers, en el mundo «Clear Sky» de noche: la forma de una app de trabajo, la misma que la consola de onpilot. |
@@ -74,7 +76,7 @@ Módulos de las carpetas publicadas (56), con la primera línea de su comentario
 | [`sky/mark.test.ts`](../sky/mark.test.ts) | La marca Órbita con hueco: el aro se abre donde está el punto, y nada de la órbita inclinada heredada. |
 | [`sky/mark.ts`](../sky/mark.ts) | La marca de OnPilot, «Órbita con hueco», como datos: un núcleo de tinta, un aro violeta que se abre donde está el punto, y el punto que abre su propio camino. |
 | [`sky/night.ts`](../sky/night.ts) | Puente mientras los consumidores pasan a `day.ts`: el documento ya no es de noche. |
-| [`sky/page.tsx`](../sky/page.tsx) | Las piezas de página del mundo de OnPilot («Clear Sky» de noche), compartidas por el sitio de onpilot y las páginas públicas de partners y developers: la cabecera de… |
+| [`sky/page.tsx`](../sky/page.tsx) | Las piezas de página del mundo de OnPilot («Airglow»), las del sitio de onpilot: la cabecera de página con su panel de cielo, el encabezado de sección, el aro de icono,… |
 | [`sky/platform-client.test.ts`](../sky/platform-client.test.ts) | El cliente de plataforma: la URL de entrada, las credenciales en cada llamada, la frase del servidor y un solo refresh. |
 | [`sky/platform-origin-local.test.ts`](../sky/platform-origin-local.test.ts) | En local, una consola habla con el `wrangler pages dev` de onpilot (puerto 8800). |
 | [`sky/platform-origin.test.ts`](../sky/platform-origin.test.ts) | Sin `VITE_PLATFORM_ORIGIN`, una consola en un subdominio habla con el apex de producción. |
