@@ -1,6 +1,6 @@
 {
   "name": "@onpilot/shared",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Código compartido de la plataforma OnPilot (UI, el kit Clear Sky, CRUD, el cliente de plataforma, helpers de worker). TypeScript crudo: lo compila el bundler de la app que lo consume.",

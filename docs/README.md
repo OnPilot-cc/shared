@@ -9,8 +9,11 @@ lo consume.
 `@cloudflare/workers-types`. Nunca se importa cruzando esa frontera (hay dos
 `tsconfig` por eso).
 
-El pin es a un **tag** de git, no a master (`v1.0.0`; consumidores: `onpilot` y
-`admin`, por `file:../shared` hasta que exista el remoto `OnPilot-cc/shared`).
+El pin es a un **tag** de git, no a master (`github:OnPilot-cc/shared#v1.1.0`;
+consumidores: `onpilot` y `admin`). El repo es **público**: el CI de los
+consumidores lo baja con `npm ci`, sin token. Para trabajar shared en local
+contra una app, se enlaza con una junction y se quita con `rmdir` antes de
+commitear.
 El mundo visual es **«Airglow»** (subproyecto 2, 2026-11-03; spec
 `../docs/superpowers/specs/2026-11-03-onpilot-mundo-airglow-design.md`), que
 sustituye al «Clear Sky» de noche heredado del fork. Ver `decisiones.md` y lo

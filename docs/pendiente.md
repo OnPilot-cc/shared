@@ -1,8 +1,7 @@
 # Pendiente — @onpilot/shared
 
-_Última revisión: 2026-11-03._
+_Última revisión: 2026-11-04._
 
 | Qué | Estado |
 |---|---|
-| **Remoto y tag**: el repo `OnPilot-cc/shared` no existe todavía; `v1.0.0` es un tag local. Hay que empujarlo **público** (el CI de los consumidores lo baja con `npm ci`, sin token) y repinear onpilot y admin de `file:../shared` a `github:OnPilot-cc/shared#v1.0.0` | sin remoto (Task 19, paso de cierre) |
-| **Un cambio de shared** después de `v1.0.0` (el mundo Airglow del subproyecto 2, 2026-11-03, entre otros) sube a un tag nuevo (`v1.1.0`) cuando haya remoto | abierto |
+| **Repo público y tag `v1.1.0`** (Airglow y lo demás después de `v1.0.0`): `OnPilot-cc/shared` existe pero es privado y sin tags en el remoto, así que el `npm ci` del CI de onpilot y admin no lo encuentra. Falta empujar `v1.0.0` y `v1.1.0`, volver el repo público y repinear onpilot y admin de `file:../shared` a `github:OnPilot-cc/shared#v1.1.0` | tag local hecho (2026-11-04); falta empujar y hacer público |
