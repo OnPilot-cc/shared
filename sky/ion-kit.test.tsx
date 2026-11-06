@@ -22,6 +22,7 @@ describe("IonMark", () => {
 		expect(svg.getAttribute("aria-hidden")).toBe("true");
 		expect(host.querySelector(".sk-ion-arc")).not.toBeNull();
 		expect(host.innerHTML).toContain("#5b3fd9");
+		expect(host.querySelector("filter")?.getAttribute("filterUnits")).toBe("userSpaceOnUse");
 	});
 
 	it("in mono it takes the colour of the text and no accent", () => {

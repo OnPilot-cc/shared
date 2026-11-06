@@ -47,7 +47,7 @@ export function ionMarkSvg(tone: IonTone, size = 28): string {
 	const fill = c.disc.length > 1 ? `url(#${discId})` : c.disc[0];
 	return (
 		`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${ION_MARK.viewBox}">` +
-		`<defs>${gradient}<filter id="${softId}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="${blur}"/></filter></defs>` +
+		`<defs>${gradient}<filter id="${softId}" filterUnits="userSpaceOnUse" x="0" y="0" width="28" height="28"><feGaussianBlur stdDeviation="${blur}"/></filter></defs>` +
 		`<circle cx="${disc.cx}" cy="${disc.cy}" r="${disc.r}" fill="${fill}"/>` +
 		`<path d="${arc.d}" fill="none" stroke="${c.halo}" stroke-width="${c.haloWidth}" stroke-linecap="round" opacity="${c.haloOpacity}" filter="url(#${softId})"/>` +
 		`<path d="${arc.d}" fill="none" stroke="${c.arc}" stroke-width="${arc.width}" stroke-linecap="round"/>` +

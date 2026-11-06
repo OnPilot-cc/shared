@@ -57,7 +57,7 @@ export function IonMark({ className = "size-6", tone = "day" }: { className?: st
 						))}
 					</radialGradient>
 				)}
-				<filter id={soft} x="-30%" y="-30%" width="160%" height="160%">
+				<filter id={soft} filterUnits="userSpaceOnUse" x="0" y="0" width="28" height="28">
 					<feGaussianBlur stdDeviation={ION_MARK.blur} />
 				</filter>
 			</defs>

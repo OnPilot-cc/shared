@@ -15,6 +15,12 @@ describe("ionMarkSvg", () => {
 		expect(ionMarkSvg("day")).toContain("#5b3fd9");
 	});
 
+	it("blurs the halo over the whole canvas, so the glow is never cut into a box", () => {
+		for (const tone of ["day", "night"] as const) {
+			expect(ionMarkSvg(tone)).toContain('filterUnits="userSpaceOnUse" x="0" y="0" width="28" height="28"');
+		}
+	});
+
 	it("is not the OnPilot mark", () => {
 		for (const tone of ["day", "night"] as const) {
 			expect(ionMarkSvg(tone)).not.toContain("M13.67 4.51");
