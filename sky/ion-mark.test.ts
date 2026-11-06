@@ -5,8 +5,8 @@ import { ION_MARK, ionMarkSvg } from "./ion-mark";
 describe("ionMarkSvg", () => {
 	it("draws the night disc and its lit rim", () => {
 		const svg = ionMarkSvg("day");
-		expect(svg).toContain('cx="14" cy="17" r="10"');
-		expect(svg).toContain('d="M4.82 11.7A10.6 10.6 0 0 1 23.18 11.7"');
+		expect(svg).toContain('cx="14" cy="17" r="8.6"');
+		expect(svg).toContain('d="M4.04 11.25A11.5 11.5 0 0 1 23.96 11.25"');
 	});
 
 	it("lights the rim in the band at night, never the day accent", () => {
@@ -34,5 +34,13 @@ describe("ionMarkSvg", () => {
 		expect(svg).toContain('xmlns="http://www.w3.org/2000/svg"');
 		expect(svg).toContain('width="64" height="64"');
 		expect(svg).toContain(`viewBox="${ION_MARK.viewBox}"`);
+	});
+});
+
+describe("Limbo at small sizes", () => {
+	it("keeps a clear gap between the lit rim and the disc, so it reads at 16px", () => {
+		const gap = ION_MARK.arc.r - ION_MARK.arc.width / 2 - ION_MARK.disc.r;
+		expect(gap).toBeGreaterThanOrEqual(1.5);
+		expect(ionMarkSvg("day")).toContain('stroke="#5b3fd9" stroke-width="2.2"');
 	});
 });

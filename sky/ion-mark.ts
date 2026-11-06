@@ -16,8 +16,9 @@ export type IonTone = "day" | "night";
 
 export const ION_MARK = {
 	viewBox: "0 0 28 28",
-	disc: { cx: 14, cy: 17, r: 10 },
-	arc: { d: "M4.82 11.7A10.6 10.6 0 0 1 23.18 11.7", width: 1.6 },
+	disc: { cx: 14, cy: 17, r: 8.6 },
+	/** El borde encendido: un arco de 120° concéntrico al disco, separado de él para leerse a 16px. */
+	arc: { d: "M4.04 11.25A11.5 11.5 0 0 1 23.96 11.25", r: 11.5, width: 2.2 },
 	/** El desenfoque del halo, en unidades del lienzo. */
 	blur: 0.9,
 } as const;
@@ -27,8 +28,8 @@ export const ION_MARK = {
  * solo color (noche). `halo` va debajo del arco, más grueso y transparente.
  */
 export const ION_COLORS: Record<IonTone, { disc: readonly string[]; arc: string; halo: string; haloWidth: number; haloOpacity: number }> = {
-	day: { disc: ["#2a2760", "#12112a", "#07081a"], arc: "#5b3fd9", halo: "#a99bff", haloWidth: 3.2, haloOpacity: 0.45 },
-	night: { disc: ["#05050d"], arc: "#cfc6ff", halo: "#a99bff", haloWidth: 3.6, haloOpacity: 0.6 },
+	day: { disc: ["#2a2760", "#12112a", "#07081a"], arc: "#5b3fd9", halo: "#a99bff", haloWidth: 4.2, haloOpacity: 0.45 },
+	night: { disc: ["#05050d"], arc: "#cfc6ff", halo: "#a99bff", haloWidth: 4.6, haloOpacity: 0.6 },
 };
 
 /** Las paradas del degradado del disco de día, de dentro afuera. */
