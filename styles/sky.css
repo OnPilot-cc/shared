@@ -1646,8 +1646,12 @@
 	background: var(--sk-surface);
 	box-shadow: 0 0 0 1px var(--sk-hair);
 }
-.sk .sk-ion-glyph[data-writing="true"] .sk-ion-arc {
-	animation: sk-ion-pulse 1.6s ease-in-out infinite;
+/* El latido sólo existe si la persona no pidió movimiento reducido: un
+   `@media (reduce)` con un selector menos específico no lo anularía. */
+@media (prefers-reduced-motion: no-preference) {
+	.sk .sk-ion-glyph[data-writing="true"] .sk-ion-arc {
+		animation: sk-ion-pulse 1.6s ease-in-out infinite;
+	}
 }
 @keyframes sk-ion-pulse {
 	0%,
@@ -1656,11 +1660,6 @@
 	}
 	50% {
 		opacity: 1;
-	}
-}
-@media (prefers-reduced-motion: reduce) {
-	.sk .sk-ion-arc {
-		animation: none;
 	}
 }
 

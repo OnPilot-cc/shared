@@ -15,7 +15,14 @@ describe("the Ion glyph", () => {
 		expect(css).toContain("@keyframes sk-ion-pulse");
 	});
 
-	it("stays still under reduced motion", () => {
-		expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.sk-ion-arc\s*\{[^}]*animation:\s*none/);
+	it("stays still under reduced motion: the pulse only exists when motion is allowed", () => {
+		// Un `@media (reduce)` con un selector menos específico no anula la animación;
+		// la única forma que no depende de la especificidad es no declararla nunca.
+		const pulse = css.indexOf('.sk .sk-ion-glyph[data-writing="true"] .sk-ion-arc');
+		const allowed = css.lastIndexOf("@media (prefers-reduced-motion: no-preference)", pulse);
+		expect(pulse).toBeGreaterThan(-1);
+		expect(allowed).toBeGreaterThan(-1);
+		// El bloque `no-preference` sigue abierto cuando llega la regla del latido.
+		expect(css.slice(allowed, pulse)).not.toMatch(/\r?\n\}/);
 	});
 });
