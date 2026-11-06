@@ -54,7 +54,7 @@ inventada lleva su costura de ejemplo. Los iconos se tipan por su forma
 <!-- BEGIN generated:modules -->
 <!-- No edites aquí: lo reescribe `npm run docs`. -->
 
-Módulos de las carpetas publicadas (55), con la primera línea de su comentario de cabecera.
+Módulos de las carpetas publicadas (58), con la primera línea de su comentario de cabecera.
 
 | Archivo | Qué hace |
 | --- | --- |
@@ -77,6 +77,9 @@ Módulos de las carpetas publicadas (55), con la primera línea de su comentario
 | [`sky/day.test.tsx`](../sky/day.test.tsx) | El documento de día: mientras se ve una página de Airglow, `<html>` y la barra del navegador llevan el suelo claro, y al salir vuelven a lo que había. |
 | [`sky/day.ts`](../sky/day.ts) | El documento entero lleva el suelo claro de Airglow mientras se ve una página del mundo: el fondo de `<html>` (lo que asoma en el rebote del scroll) y el color de la… |
 | [`sky/hooks.ts`](../sky/hooks.ts) | Hooks de scroll y de montaje contra los que se animan las páginas de Clear Sky, y los tres que usan las piezas de consola de `console.tsx` (`useFlash`, `useDismiss`,… |
+| [`sky/ion-kit.test.tsx`](../sky/ion-kit.test.tsx) | Ion en la interfaz: el símbolo (día, noche, mono) y el glifo junto a sus respuestas, que late mientras escribe. |
+| [`sky/ion-mark.test.ts`](../sky/ion-mark.test.ts) | El símbolo de Ion, «Limbo»: la Tierra de noche vista desde arriba con su borde encendido. |
+| [`sky/ion-mark.ts`](../sky/ion-mark.ts) | El símbolo de Ion, «Limbo» (2026-11-05), como datos: la Tierra de noche vista desde arriba y su borde encendido. |
 | [`sky/kit.tsx`](../sky/kit.tsx) | Las piezas del mundo de OnPilot («Airglow»): la marca, la píldora y la flecha. |
 | [`sky/mark.test.ts`](../sky/mark.test.ts) | La marca Órbita con hueco: el aro se abre donde está el punto, y nada de la órbita inclinada heredada. |
 | [`sky/mark.ts`](../sky/mark.ts) | La marca de OnPilot, «Órbita con hueco», como datos: un núcleo de tinta, un aro violeta que se abre donde está el punto, y el punto que abre su propio camino. |

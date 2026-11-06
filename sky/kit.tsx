@@ -6,6 +6,7 @@
 import { useId } from "react";
 import { ArrowRight } from "lucide-react";
 import { MARK, MARK_COLORS, type MarkTone } from "./mark";
+import { ION_COLORS, ION_DISC_STOPS, ION_MARK, type IonTone } from "./ion-mark";
 
 /** La marca: núcleo de tinta, aro abierto y el punto en el hueco. `tone="night"` sobre el cielo. */
 export function Mark({ className = "size-6", tone = "day" }: { className?: string; tone?: MarkTone }) {
@@ -24,6 +25,64 @@ export function Mark({ className = "size-6", tone = "day" }: { className?: strin
 			<circle cx={MARK.core.cx} cy={MARK.core.cy} r={MARK.core.r} fill={`url(#${id})`} />
 			<circle cx={MARK.dot.cx} cy={MARK.dot.cy} r={MARK.dot.r} fill={c.dot} />
 		</svg>
+	);
+}
+
+/**
+ * El símbolo de Ion, «Limbo»: el disco de noche y su borde encendido. `tone="night"`
+ * sobre el cielo; `tone="mono"` en `currentColor`, sin halo, para huecos pequeños.
+ * El arco lleva `sk-ion-arc`: el CSS lo hace latir dentro de un `IonGlyph` que escribe.
+ */
+export function IonMark({ className = "size-6", tone = "day" }: { className?: string; tone?: IonTone | "mono" }) {
+	const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
+	const disc = `iond${uid}`;
+	const soft = `ions${uid}`;
+	const { cx, cy, r } = ION_MARK.disc;
+	if (tone === "mono") {
+		return (
+			<svg viewBox={ION_MARK.viewBox} className={className} aria-hidden="true">
+				<circle cx={cx} cy={cy} r={r} fill="currentColor" opacity={0.35} />
+				<path className="sk-ion-arc" d={ION_MARK.arc.d} fill="none" stroke="currentColor" strokeWidth={ION_MARK.arc.width} strokeLinecap="round" />
+			</svg>
+		);
+	}
+	const c = ION_COLORS[tone];
+	return (
+		<svg viewBox={ION_MARK.viewBox} className={className} aria-hidden="true">
+			<defs>
+				{c.disc.length > 1 && (
+					<radialGradient id={disc} cx="50%" cy="20%" r="80%">
+						{c.disc.map((color, i) => (
+							<stop key={color} offset={ION_DISC_STOPS[i]} stopColor={color} />
+						))}
+					</radialGradient>
+				)}
+				<filter id={soft} x="-30%" y="-30%" width="160%" height="160%">
+					<feGaussianBlur stdDeviation={ION_MARK.blur} />
+				</filter>
+			</defs>
+			<circle cx={cx} cy={cy} r={r} fill={c.disc.length > 1 ? `url(#${disc})` : c.disc[0]} />
+			<path
+				className="sk-ion-arc"
+				d={ION_MARK.arc.d}
+				fill="none"
+				stroke={c.halo}
+				strokeWidth={c.haloWidth}
+				strokeLinecap="round"
+				opacity={c.haloOpacity}
+				filter={`url(#${soft})`}
+			/>
+			<path d={ION_MARK.arc.d} fill="none" stroke={c.arc} strokeWidth={ION_MARK.arc.width} strokeLinecap="round" />
+		</svg>
+	);
+}
+
+/** Ion junto a sus respuestas: el símbolo en un círculo blanco; `writing` hace latir su borde mientras escribe. */
+export function IonGlyph({ writing = false, className = "" }: { writing?: boolean; className?: string }) {
+	return (
+		<span className={`sk-ion-glyph ${className}`} data-writing={writing ? "true" : "false"} aria-hidden="true">
+			<IonMark className="size-4" />
+		</span>
 	);
 }
 

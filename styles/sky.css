@@ -1631,6 +1631,39 @@
 	color: var(--sk-accent);
 }
 
+/* ── Ion: el glifo junto a sus respuestas (`IonGlyph`, kit.tsx) ─────────────
+   El símbolo «Limbo» en un círculo blanco con filete. Mientras Ion escribe, el
+   halo del borde encendido late (1.6s); con movimiento reducido se queda quieto.
+   Sin `position` (sky.css no va en capa de Tailwind). */
+.sk .sk-ion-glyph {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--sk-surface);
+	box-shadow: 0 0 0 1px var(--sk-hair);
+}
+.sk .sk-ion-glyph[data-writing="true"] .sk-ion-arc {
+	animation: sk-ion-pulse 1.6s ease-in-out infinite;
+}
+@keyframes sk-ion-pulse {
+	0%,
+	100% {
+		opacity: 0.45;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.sk .sk-ion-arc {
+		animation: none;
+	}
+}
+
 /* ── el cielo «Lectura»: su respaldo y sus horas ────────────────────────────
    `.sk-band` va en el panel de cielo, debajo del lienzo: es lo que se ve antes
    del primer fotograma y lo único que queda sin WebGL2. La Tierra de noche
